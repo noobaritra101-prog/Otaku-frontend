@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0b">
+<title>Otaku Nexus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+/* Matte black + silver. Phone-first shell: top bar, swipe pager (Collection, Shop, Games, Guide), bottom dock, full-screen viewer and sheets. */
+:root{
+  --bg:#0a0a0b; --panel:#131315; --panel2:#1a1a1d; --panel3:#222226;
+  --line:rgba(214,218,226,.09); --line2:rgba(214,218,226,.18);
+  --fg:#ececee; --mute:#8b8e97; --silver:#c6cbd4; --silver2:#eceef2; --accent:#c6cbd4;
+  --ok:#8fd9ae; --bad:#ee8fa8;
+  --c-common:#8e939e; --c-uncommon:#69b88e; --c-rare:#6aa3e8; --c-premium:#58c7c7; --c-legendary:#e2b366;
+  --c-mythic:#d9688f; --c-celestial:#8fc3f2; --c-divine:#efe2b2; --c-nexus:#b494f0;
+  --display:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+  --body:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --silverGrad:linear-gradient(180deg,#eef0f3 0%,#b3b8c2 55%,#9a9fa9 100%);
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:400 15px/1.5 var(--body);-webkit-font-smoothing:antialiased;overflow:hidden;overscroll-behavior:none}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
+input,select{font:inherit;color:var(--fg)}
+:focus-visible{outline:2px solid var(--silver);outline-offset:2px;border-radius:8px}
+svg.lucide{width:1.2em;height:1.2em;stroke-width:1.8;vertical-align:-.2em}
+[hidden]{display:none!important}
+.em{font-style:normal;line-height:1}
+
+/* ───── intro: pure CSS, transform/opacity only ───── */
+#intro{position:fixed;inset:0;z-index:200;background:#060607;display:grid;place-items:center;overflow:hidden;transition:opacity .45s ease}
+#intro.out{opacity:0;pointer-events:none}
+#intro::before{content:"";position:absolute;inset:0;background:radial-gradient(55% 45% at 50% 46%,rgba(198,203,212,.10),transparent 70%)}
+.ibox{position:relative;display:flex;flex-direction:column;align-items:center;gap:30px}
+.pic{position:relative;width:clamp(150px,44vw,210px);aspect-ratio:1;opacity:0;transform:scale(.9);animation:iIn .8s .1s cubic-bezier(.2,.8,.2,1) forwards}
+.pic img{position:absolute;inset:10px;width:calc(100% - 20px);height:calc(100% - 20px);border-radius:50%;object-fit:cover;opacity:0;transition:opacity .4s}
+.pic img.ok{opacity:1}
+.pic .core{position:absolute;inset:10px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#2a2a2e,#101012);border:1px solid var(--line2)}
+.pic svg.ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.pic svg.ring circle{fill:none;stroke:var(--silver);stroke-width:1.6;stroke-linecap:round;stroke-dasharray:302;stroke-dashoffset:302;animation:iDraw 1.4s .25s cubic-bezier(.4,0,.2,1) forwards}
+.pic svg.ring circle.base{stroke:rgba(198,203,212,.12);stroke-dashoffset:0;animation:none}
+.iword{font:800 clamp(26px,8vw,40px)/1.15 var(--display);text-align:center;color:var(--silver2);opacity:0;transform:translateY(8px);animation:iIn .7s .75s cubic-bezier(.2,.8,.2,1) forwards}
+.ibar{position:absolute;left:50%;bottom:calc(11vh + env(safe-area-inset-bottom,0px));width:min(180px,46vw);height:2px;margin-left:calc(min(180px,46vw)/-2);border-radius:2px;background:rgba(198,203,212,.12);overflow:hidden}
+.ibar i{display:block;height:100%;width:100%;background:var(--silverGrad);transform-origin:left;transform:scaleX(0);animation:iBar 2.3s .1s linear forwards}
+.skip{position:absolute;right:16px;top:calc(16px + env(safe-area-inset-top,0px));background:rgba(255,255,255,.04);border:1px solid var(--line2);border-radius:999px;padding:8px 14px;color:var(--silver);font-size:13px;display:flex;gap:8px;align-items:center}
+@keyframes iIn{to{opacity:1;transform:none}}
+@keyframes iDraw{to{stroke-dashoffset:0}}
+@keyframes iBar{to{transform:scaleX(1)}}
+
+/* ───── shell ───── */
+#app{position:fixed;inset:0;display:flex;flex-direction:column}
+.top{flex:none;display:flex;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line);background:#0a0a0b}
+.brand{font:800 19px/1 var(--display);display:flex;align-items:center;gap:10px;flex:1;min-width:0;white-space:nowrap;letter-spacing:.01em}
+.brand .mark{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--panel2);border:1px solid var(--line2);color:var(--silver);flex:none}
+.bal{display:flex;gap:8px;align-items:center;padding:7px 12px;border-radius:999px;background:var(--panel);border:1px solid var(--line2);font:600 14px var(--mono);font-variant-numeric:tabular-nums}
+.bal small{color:var(--mute);font:500 11px var(--body);letter-spacing:.06em}
+.avatar{width:36px;height:36px;border-radius:50%;flex:none;display:grid;place-items:center;overflow:hidden;background:var(--panel2);border:1.5px solid var(--line2);font:700 15px var(--display);color:var(--silver)}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.pager{flex:1;min-height:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.pager::-webkit-scrollbar{display:none}
+.page{flex:0 0 100%;width:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow-y:auto;overscroll-behavior-y:contain;
+  padding:16px max(16px,env(safe-area-inset-right,0px)) 28px max(16px,env(safe-area-inset-left,0px));-webkit-overflow-scrolling:touch}
+.page>.in{max-width:640px;margin:0 auto}
+.dock{flex:none;display:grid;grid-template-columns:repeat(4,1fr);padding:6px max(10px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:#0a0a0b}
+.dock button{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:14px;color:var(--mute);font-size:11.5px;font-weight:600;letter-spacing:.02em;transition:color .2s}
+.dock button svg{width:21px;height:21px}
+.dock button[aria-selected="true"]{color:var(--silver2)}
+.dock button[aria-selected="true"]::before{content:"";position:absolute;top:-7px;left:32%;right:32%;height:2px;border-radius:2px;background:var(--silverGrad)}
+h2{font:800 26px/1.15 var(--display);margin:0 0 4px}
+.sub{color:var(--mute);font-size:13.5px;margin:0 0 14px}
+
+/* ───── collection ───── */
+.search{display:flex;align-items:center;gap:10px;padding:0 14px;background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;color:var(--mute)}
+.search input{flex:1;min-width:0;background:none;border:0;outline:0;padding:12px 0;font-size:16px}
+.search:focus-within{border-color:var(--silver)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin:0 -16px 6px;padding-inline:16px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--mute);font-size:13px;white-space:nowrap}
+.chip[aria-pressed="true"]{color:#0a0a0b;background:var(--silverGrad);border-color:transparent;font-weight:700}
+.stats{display:flex;gap:18px;color:var(--mute);font-size:13px;margin:6px 0 4px}.stats b{color:var(--fg);font-variant-numeric:tabular-nums}
+.series{margin-top:20px}
+.shead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 2px 10px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+.shead h3{margin:0;font:800 18px/1.2 var(--display);overflow-wrap:anywhere;color:var(--silver2)}
+.shead span{flex:none;font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
+.sgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(min-width:520px){.sgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.empty{padding:40px 16px;text-align:center;color:var(--mute);border:1px dashed var(--line2);border-radius:16px;margin-top:16px}
+.card{position:relative;display:block;width:100%;text-align:left;border-radius:16px;overflow:hidden;background:var(--panel);border:1px solid var(--line);--rc:var(--c-common);transition:transform .2s,border-color .2s}
+.card:active{transform:scale(.97)}
+.art{position:relative;aspect-ratio:3/4;display:grid;place-items:center;overflow:hidden;background:radial-gradient(90% 70% at 50% 25%,hsl(var(--h) 14% 24%),hsl(var(--h) 10% 11%) 65%,#09090a)}
+.art img,.art video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.glyph{font:800 72px/1 var(--display);color:rgba(255,255,255,.55);mix-blend-mode:screen}
+.card .art::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35) 0,transparent 28%,transparent 52%,rgba(8,8,9,.94) 100%)}
+.card::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--rc);opacity:.9;z-index:3}
+.badge{position:absolute;left:8px;top:8px;z-index:2;display:inline-flex;gap:6px;align-items:center;padding:3px 9px 3px 7px;border-radius:999px;background:rgba(8,8,9,.72);backdrop-filter:blur(6px);border:1px solid var(--line2);font-size:11px;font-weight:600}
+.qty{position:absolute;right:8px;top:8px;z-index:2;padding:2px 8px;border-radius:999px;background:rgba(8,8,9,.72);font:500 11px var(--mono);color:var(--silver)}
+.play{position:absolute;right:8px;bottom:56px;z-index:2;width:26px;height:26px;border-radius:50%;background:rgba(8,8,9,.72);display:grid;place-items:center;color:var(--silver)}
+.cap{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:10px 12px 12px}
+.cap b{display:block;font:700 15px/1.2 var(--display);overflow-wrap:anywhere}
+.cap span{display:block;font-size:11.5px;color:var(--silver);opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.more{height:1px}
+
+/* ───── full view ───── */
+#viewer{position:fixed;inset:0;z-index:120;background:#000;touch-action:none;overflow:hidden}
+#vbg{position:absolute;inset:-30px;background-size:cover;background-position:center;filter:blur(40px) brightness(.4) saturate(1.1);transform:scale(1.1)}
+.vtop{position:absolute;z-index:4;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 8px}
+.vtop .count{font:500 13px var(--mono);color:var(--silver);padding:6px 12px;border-radius:999px;background:rgba(8,8,9,.6);border:1px solid var(--line2)}
+.round{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(8,8,9,.6);border:1px solid var(--line2);backdrop-filter:blur(8px)}
+.stage{position:absolute;inset:0;z-index:1;perspective:1100px}
+.vcard{position:absolute;inset:0;--rc:var(--c-common);transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .28s;will-change:transform}
+.vcard.drag{transition:none}
+.vcard .art{position:absolute;inset:0;aspect-ratio:auto;height:100%;background:transparent}
+.vcard .art img,.vcard .art video{object-fit:contain}
+.vcard .glyph{font-size:140px}
+.vinfo{position:absolute;z-index:3;left:0;right:0;bottom:0;padding:70px 20px calc(18px + env(safe-area-inset-bottom,0px));display:grid;gap:10px;justify-items:center;text-align:center;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(0,0,0,.78) 55%,rgba(0,0,0,.92))}
+.vinfo h3{font:800 26px/1.15 var(--display);margin:0;overflow-wrap:anywhere}
+.vmeta{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;color:var(--silver);font-size:13.5px}
+.tag{display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:999px;border:1px solid var(--line2);background:rgba(8,8,9,.6);font-weight:600;font-size:12.5px;white-space:nowrap}
+.tag.r{border-color:color-mix(in srgb,var(--rc) 60%,transparent)}
+.vnav{position:absolute;z-index:5;top:50%;width:42px;height:42px;margin-top:-21px;display:none}
+@media(hover:hover) and (pointer:fine){.vnav{display:grid}}
+.vnav.l{left:14px}.vnav.r{right:14px}
+.hint{font-size:12px;color:var(--mute)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:14px;font-weight:700;border:1px solid var(--line2);background:var(--panel2)}
+.btn.pri{background:var(--silverGrad);border-color:transparent;color:#0a0a0b;box-shadow:0 8px 24px -10px rgba(198,203,212,.5)}
+.btn.ok{background:linear-gradient(180deg,#8fdcb0,#52a77a);border-color:transparent;color:#07140d}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.btn.wide{width:100%}
+
+/* ───── shop ───── */
+.timer{display:flex;gap:8px;align-items:center;color:var(--mute);font-size:13.5px;margin-bottom:14px}.timer b{font:600 16px var(--mono);color:var(--fg)}
+.lab{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--silver);margin:20px 0 10px;display:flex;gap:8px;align-items:center}
+.shelf{display:grid;gap:12px}
+.item{display:grid;grid-template-columns:96px 1fr;gap:14px;padding:12px;border-radius:18px;background:var(--panel);border:1px solid var(--line);--rc:var(--c-rare);position:relative;overflow:hidden}
+.item::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:var(--rc)}
+.item .art{border-radius:12px;aspect-ratio:3/4;width:96px}
+.item .art .glyph{font-size:46px}
+.item .body{display:flex;flex-direction:column;gap:6px;min-width:0}
+.item h4{margin:0;font:700 17px/1.2 var(--display);overflow-wrap:anywhere}
+.item .s{color:var(--mute);font-size:12.5px}
+.price{font:700 22px/1 var(--display);margin-top:auto;font-variant-numeric:tabular-nums}.price small{font:500 12px var(--body);color:var(--mute)}
+.item .btn{padding:9px 14px;font-size:14px;align-self:flex-start}
+.item.locked{opacity:.55}
+.lock{display:inline-flex;gap:6px;align-items:center;color:var(--mute);font-size:13px}
+.notice{padding:18px;border-radius:16px;border:1px dashed var(--line2);color:var(--mute);text-align:center}
+
+/* ───── sheet + swipe to purchase ───── */
+#sheetbg{position:fixed;inset:0;z-index:140;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center}
+#sheet{width:min(520px,100%);background:var(--panel);border:1px solid var(--line2);border-bottom:0;border-radius:26px 26px 0 0;padding:12px 20px calc(22px + env(safe-area-inset-bottom,0px));display:grid;gap:16px;animation:up .28s cubic-bezier(.2,.8,.2,1)}
+#sheet::before{content:"";justify-self:center;width:40px;height:4px;border-radius:4px;background:var(--line2)}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+#sheet h3{margin:0;font:800 22px/1.2 var(--display)}
+.rows{display:grid;gap:10px;font-size:14px;padding:14px;border-radius:16px;background:var(--bg);border:1px solid var(--line)}.rows div{display:flex;justify-content:space-between;gap:12px}.rows span{color:var(--mute)}.rows b{font-variant-numeric:tabular-nums}
+.sprev{display:flex;gap:14px;align-items:center}.sprev .art{width:84px;border-radius:12px;flex:none}.sprev .glyph{font-size:40px}
+.sprev .t b{display:block;font:700 18px/1.2 var(--display)}.sprev .t span{color:var(--mute);font-size:13px}
+.done{display:grid;place-items:center;gap:10px;text-align:center;padding:8px 0}
+.done .tick{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:rgba(143,217,174,.12);border:1px solid rgba(143,217,174,.5);color:var(--ok);animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
+.done .tick svg{width:30px;height:30px}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+.swipe{position:relative;height:64px;border-radius:999px;background:#0a0a0b;border:1px solid var(--line2);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:inset 0 2px 8px rgba(0,0,0,.6)}
+.swipe-fill{position:absolute;left:0;top:0;bottom:0;width:64px;border-radius:999px;background:linear-gradient(90deg,rgba(198,203,212,.08),rgba(198,203,212,.38))}
+.swipe-txt{position:absolute;inset:0;display:grid;place-items:center;padding-left:52px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:12.5px;color:transparent;background:linear-gradient(100deg,#5f626b 30%,#f3f4f6 50%,#5f626b 70%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;animation:shimmer 2.6s linear infinite}
+@keyframes shimmer{from{background-position:120% 0}to{background-position:-120% 0}}
+.knob{position:absolute;left:5px;top:5px;width:52px;height:52px;border-radius:50%;background:var(--silverGrad);color:#0a0a0b;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.7);cursor:grab;touch-action:none}
+.knob svg{width:24px;height:24px;stroke-width:2.2}
+.swipe.off{opacity:.5}.swipe.off .knob{cursor:not-allowed}.swipe.off .swipe-txt{animation:none;background:none;color:var(--mute);-webkit-text-fill-color:var(--mute)}
+.swipe.busy .swipe-txt{animation:none;background:none;color:var(--silver);-webkit-text-fill-color:var(--silver)}
+
+/* ───── games (mines) ───── */
+.panel{padding:16px;border-radius:20px;background:var(--panel);border:1px solid var(--line);display:grid;gap:16px;margin-bottom:14px}
+.balcard{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-radius:18px;background:linear-gradient(135deg,var(--panel3),var(--panel));border:1px solid var(--line2)}
+.balcard .l{display:flex;align-items:center;gap:12px}
+.balcard .ic{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--bg);border:1px solid var(--line2);color:var(--silver)}
+.balcard small{display:block;color:var(--mute);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.balcard b{font:700 22px/1.1 var(--mono);font-variant-numeric:tabular-nums}
+.balcard .pill{font-size:12px;color:var(--silver);padding:5px 11px;border-radius:999px;border:1px solid var(--line2);background:var(--bg)}
+.fl{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-bottom:10px;display:flex;justify-content:space-between;align-items:baseline}
+.fl b{font:700 18px var(--mono);color:var(--fg);letter-spacing:0;text-transform:none}
+.stepper{display:grid;grid-template-columns:52px 1fr 52px;gap:8px;align-items:center}
+.stepper button{height:52px;border-radius:14px;border:1px solid var(--line2);background:var(--panel2);font-size:22px;color:var(--silver)}
+.stepper button:active{background:var(--panel3)}
+.stepper input{height:52px;border-radius:14px;border:1px solid var(--line2);background:var(--bg);text-align:center;font:700 22px var(--mono);width:100%;min-width:0}
+.quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.quick button{padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);color:var(--mute);font-size:13px}
+.quick button:active{background:var(--panel3);color:var(--fg)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:8px;background:linear-gradient(90deg,var(--silver) var(--p,10%),#2a2a2e var(--p,10%));outline:0;margin:6px 0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--silverGrad);border:0;box-shadow:0 2px 10px rgba(0,0,0,.6)}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#c6cbd4;border:0}
+.mrow{display:flex;justify-content:space-between;font-size:12.5px;color:var(--mute);margin-top:6px}.mrow b{color:var(--silver2)}
+.hud{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.hud div{padding:12px 6px;border-radius:14px;background:var(--bg);border:1px solid var(--line)}
+.hud div.big{border-color:var(--line2);background:linear-gradient(180deg,var(--panel3),var(--bg))}
+.hud span{display:block;font-size:10.5px;color:var(--mute);letter-spacing:.1em;text-transform:uppercase}
+.hud b{font:700 20px/1.35 var(--display);font-variant-numeric:tabular-nums}
+.ladder{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}.ladder::-webkit-scrollbar{display:none}
+.ladder span{flex:none;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);font:500 12.5px var(--mono);color:var(--mute)}
+.ladder span.n{color:#0a0a0b;background:var(--silverGrad);border-color:transparent;font-weight:700}
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:10px;border-radius:20px;background:var(--bg);border:1px solid var(--line)}
+.tile{aspect-ratio:1;border-radius:13px;background:linear-gradient(180deg,#232327,#18181b);border:1px solid var(--line2);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 2px 6px rgba(0,0,0,.5);display:grid;place-items:center;transition:transform .12s,border-color .2s;position:relative;overflow:hidden;color:var(--silver)}
+.tile:active:not(:disabled){transform:scale(.92)}
+.tile svg{width:52%;height:52%;stroke-width:1.8}
+.tile.idle{opacity:.55;color:#3a3a40}
+.tile.safe{background:linear-gradient(180deg,#1d2a23,#121a16);border-color:rgba(143,217,174,.55);color:var(--ok);animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
+.tile.bomb{background:linear-gradient(180deg,#34202a,#1b1117);border-color:rgba(238,143,168,.7);color:var(--bad);animation:shake .45s}
+.tile.dim{opacity:.45;color:var(--bad)}
+.tile:disabled{cursor:default}
+@keyframes shake{20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+.banner{padding:16px;border-radius:16px;text-align:center;font:700 18px var(--display);border:1px solid var(--line2);animation:pop .4s}
+.banner.win{background:rgba(143,217,174,.08);border-color:rgba(143,217,174,.45);color:var(--ok)}
+.banner.lose{background:rgba(238,143,168,.08);border-color:rgba(238,143,168,.45);color:var(--bad)}
+.banner small{display:block;font:500 13px var(--body);color:var(--mute);margin-top:4px}
+.rules{list-style:none;padding:0;margin:0;display:grid;border-radius:18px;background:var(--panel);border:1px solid var(--line);padding:4px 16px}
+.rules li{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid var(--line);font-size:13.5px}.rules li:last-child{border-bottom:0}.rules li span{color:var(--mute)}.rules li b{text-align:right}
+
+/* ───── guide ───── */
+.ghero{position:relative;padding:22px 20px;border-radius:22px;background:linear-gradient(135deg,var(--panel3),var(--panel));border:1px solid var(--line2);margin-bottom:18px;overflow:hidden}
+.ghero::after{content:"星";position:absolute;right:-6px;bottom:-30px;font:800 130px/1 var(--display);color:rgba(198,203,212,.05)}
+.ghero h3{margin:0 0 6px;font:800 22px/1.2 var(--display)}
+.ghero p{margin:0;color:var(--mute);font-size:13.5px;max-width:30ch}
+.steps{list-style:none;padding:0;margin:0;display:grid;gap:0;counter-reset:s}
+.steps li{position:relative;display:flex;gap:14px;padding:0 0 18px}
+.steps li::before{content:"";position:absolute;left:19px;top:42px;bottom:2px;width:1px;background:var(--line2)}
+.steps li:last-child{padding-bottom:0}.steps li:last-child::before{display:none}
+.steps .ico{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--panel2);border:1px solid var(--line2);color:var(--silver);z-index:1}
+.steps .tx{padding:2px 0 0}
+.steps b{display:block;font:700 16px/1.25 var(--display)}.steps p{margin:4px 0 0;color:var(--mute);font-size:13.5px}
+.rgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.rgrid.s2{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(min-width:480px){.rgrid.s2{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.rcell{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:14px;background:var(--panel);border:1px solid var(--line);font-size:13px;font-weight:600;min-width:0}
+.rcell .em{font-size:19px;flex:none}
+.rcell span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rcell small{display:block;color:var(--mute);font-weight:500;font-size:10.5px;letter-spacing:.04em}
+.cmdlist{display:grid;border-radius:18px;background:var(--panel);border:1px solid var(--line);padding:4px 16px}
+.crow{display:flex;gap:14px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line);font-size:13.5px}.crow:last-child{border-bottom:0}
+.crow code{flex:none;min-width:92px;font:500 13px var(--mono);color:var(--silver2)}
+.crow span{color:var(--mute)}
+
+#toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);z-index:300;max-width:min(88vw,420px);padding:11px 16px;border-radius:14px;background:var(--panel3);border:1px solid var(--line2);font-size:14px;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="intro" aria-label="Otaku Nexus intro">
+  <div class="ibox" id="logo">
+    <div class="pic" id="logoPic">
+      <div class="core"></div>
+      <img id="logoImg" alt="Otaku Nexus" decoding="async">
+      <svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="base" cx="50" cy="50" r="48"/><circle cx="50" cy="50" r="48"/></svg>
+    </div>
+    <div class="iword">˹Oᴛᴀᴋυ ຖᴇxυʂ 👒˼</div>
+  </div>
+  <div class="ibar" aria-hidden="true"><i></i></div>
+  <button class="skip" id="skip" type="button"><i data-lucide="skip-forward"></i> Skip</button>
+</div>
+
+<div id="app">
+  <header class="top" id="top">
+    <div class="brand"><span class="mark"><i data-lucide="sparkles"></i></span>Otaku Nexus</div>
+    <div class="bal" id="balBox" hidden><small>NEX</small><span id="bal">0</span></div>
+    <div class="avatar" id="avatar" hidden></div>
+  </header>
+
+  <main class="pager" id="pager">
+    <section class="page" id="p0" aria-label="Collection"><div class="in">
+      <h2>Collection</h2>
+      <p class="sub" id="colSub">Your collection</p>
+      <label class="search"><i data-lucide="search"></i><input id="q" type="search" placeholder="Search name, anime or ID" autocomplete="off" aria-label="Search"></label>
+      <div class="chips" id="chips" role="group" aria-label="Rarity"></div>
+      <div class="chips" id="subchips" role="group" aria-label="Sub rarity"></div>
+      <p class="stats" id="stats"></p>
+      <div id="grid"></div><div class="more" id="more"></div>
+    </div></section>
+
+    <section class="page" id="p1" aria-label="Shop"><div class="in">
+      <h2>Shop</h2>
+      <p class="sub">Your own random cards, every day. Each can be bought once.</p>
+      <div class="timer"><i data-lucide="clock"></i>Resets in <b id="reset">--:--:--</b></div>
+      <div id="shopBody"></div>
+    </div></section>
+
+    <section class="page" id="p2" aria-label="Games"><div class="in">
+      <h2>Mines</h2>
+      <p class="sub">Open safe tiles to raise the multiplier. Cash out before you hit a mine.</p>
+      <div id="minesBody"></div>
+    </div></section>
+
+    <section class="page" id="p3" aria-label="Guide"><div class="in">
+      <h2>Guide</h2>
+      <p class="sub">Start in two minutes.</p>
+      <div class="ghero"><h3>Collect. Bind. Trade.</h3><p>Characters drop in your group chats. Be first to bind one and it is yours.</p></div>
+      <ol class="steps">
+        <li><span class="ico"><i data-lucide="user-plus"></i></span><div class="tx"><b>Add the bot to your group</b><p>Open the bot, press Add Me and make it an admin so it can see messages.</p></div></li>
+        <li><span class="ico"><i data-lucide="message-circle"></i></span><div class="tx"><b>Chat normally</b><p>A character drops every <span id="dMin">110</span> to <span id="dMax">500</span> messages, set by group admins with /setdrop.</p></div></li>
+        <li><span class="ico"><i data-lucide="hand"></i></span><div class="tx"><b>Bind it first</b><p>Type /bind and the character's name. The first correct name keeps the card.</p></div></li>
+        <li><span class="ico"><i data-lucide="coins"></i></span><div class="tx"><b>Earn Nex and spend it</b><p>Claim /daily, play /slot and /whoami, play Mines here, then buy cards in the Shop.</p></div></li>
+      </ol>
+      <div class="lab"><i data-lucide="gem"></i>Rarities</div>
+      <div class="rgrid" id="rarGrid"></div>
+      <div class="lab"><i data-lucide="wand-sparkles"></i>Sub rarities</div>
+      <div class="rgrid s2" id="subGrid"></div>
+      <div class="lab"><i data-lucide="terminal"></i>Useful commands</div>
+      <div class="cmdlist">
+        <div class="crow"><code>/daily</code><span>Claim your daily Nex</span></div>
+        <div class="crow"><code>/mynex</code><span>Check your balance</span></div>
+        <div class="crow"><code>/shop</code><span>See today's cards</span></div>
+        <div class="crow"><code>/harem</code><span>Browse your collection</span></div>
+        <div class="crow"><code>/search rem</code><span>Find a character by name or ID</span></div>
+        <div class="crow"><code>/waifuverse</code><span>Explore every character</span></div>
+        <div class="crow"><code>/topplayers</code><span>Leaderboard</span></div>
+        <div class="crow"><code>/rarity</code><span>Rarity list and odds</span></div>
+        <div class="crow"><code>/oweb</code><span>Open this app</span></div>
+      </div>
+    </div></section>
+  </main>
+
+  <nav class="dock" id="dock" aria-label="Sections">
+    <button type="button" data-i="0" aria-selected="true"><i data-lucide="layers"></i>Collection</button>
+    <button type="button" data-i="1" aria-selected="false"><i data-lucide="shopping-bag"></i>Shop</button>
+    <button type="button" data-i="2" aria-selected="false"><i data-lucide="gamepad-2"></i>Games</button>
+    <button type="button" data-i="3" aria-selected="false"><i data-lucide="book-open"></i>Guide</button>
+  </nav>
+</div>
+
+<div id="viewer" hidden role="dialog" aria-modal="true" aria-label="Card viewer">
+  <div id="vbg"></div>
+  <div class="stage" id="stage"><div class="vcard" id="vcard"></div></div>
+  <div class="vtop"><span class="round" style="visibility:hidden"></span><span class="count" id="vcount"></span><button class="round" type="button" id="vclose" aria-label="Close"><i data-lucide="x"></i></button></div>
+  <button class="vnav l round" type="button" id="vprev" aria-label="Previous"><i data-lucide="chevron-left"></i></button>
+  <button class="vnav r round" type="button" id="vnext" aria-label="Next"><i data-lucide="chevron-right"></i></button>
+  <div class="vinfo" id="vinfo"></div>
+</div>
+
+<div id="sheetbg" hidden><div id="sheet" role="dialog" aria-modal="true"></div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s)}, $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var tg=window.Telegram&&window.Telegram.WebApp, INIT=(tg&&tg.initData)||"";
+if(tg){try{tg.ready();tg.expand();tg.setHeaderColor&&tg.setHeaderColor("#0a0a0b");tg.setBackgroundColor&&tg.setBackgroundColor("#0a0a0b");tg.disableVerticalSwipes&&tg.disableVerticalSwipes()}catch(e){}}
+function haptic(kind){try{var h=tg&&tg.HapticFeedback;if(!h)return;if(kind==="ok"||kind==="err"||kind==="warn")h.notificationOccurred({ok:"success",err:"error",warn:"warning"}[kind]);else h.impactOccurred(kind||"light")}catch(e){}}
+function icons(){try{window.lucide&&lucide.createIcons()}catch(e){}}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function fmt(n){return Number(n).toLocaleString("en-US")}
+function toast(t){var el=$("#toast");el.textContent=t;el.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(function(){el.classList.remove("on")},2600)}
+
+/* ───── backend ───── */
+var IBB="https://i.ibb.co/5gbmM7LJ/file-0000000010188246861284ef1e5f1f15.png";
+var RAILWAY="https://otaku-production-4e8152dc.up.railway.app";
+var BASES=(location.protocol==="http:"||location.protocol==="https:")?["",RAILWAY]:[RAILWAY];
+var API=null;
+function withTimeout(p,ms){return new Promise(function(res,rej){var t=setTimeout(function(){rej(new Error("timeout"))},ms);p.then(function(v){clearTimeout(t);res(v)},function(e){clearTimeout(t);rej(e)})})}
+var baseReady=(function(){
+  var i=0;
+  function next(){
+    if(i>=BASES.length){API=BASES[BASES.length-1];return Promise.resolve()}
+    var b=BASES[i++];
+    return withTimeout(fetch(b+"/health",{cache:"no-store"}).then(function(r){return r.text()}),7000).then(function(t){if(t.trim()==="ok"){API=b}else return next()},next);
+  }
+  return next();
+})();
+function api(path,body){
+  return baseReady.then(function(){
+    var h={}; if(INIT)h["X-Init-Data"]=INIT; if(body)h["Content-Type"]="application/json";
+    return fetch(API+path,{method:body?"POST":"GET",headers:h,body:body?JSON.stringify(body):undefined,cache:"no-store"});
+  }).then(function(r){return r.json().catch(function(){return {}}).then(function(j){if(!r.ok){var e=new Error(j.error||"Something went wrong.");e.status=r.status;throw e}return j})});
+}
+function imgUrl(id){return API+"/api/img/"+id}
+
+/* ───── rarity + sub rarity ───── */
+var RARITIES=["Common","Uncommon","Rare","Premium","Legendary","Mythic","Celestial","Divine","Nexus"], RIDX={};
+RARITIES.forEach(function(r,i){RIDX[r]=i});
+var RE={Common:"☘️",Uncommon:"🍀",Rare:"🧿",Premium:"💎",Legendary:"🔮",Mythic:"🎗️",Celestial:"🎐",Divine:"🦪",Nexus:"🪐"};
+var SUBS=[["Halloween","🎃"],["AMV","🎬"],["Maid","🧹"],["Bunny","🐰"],["Christmas","🎄"],["Valentine","💝"],["Summer","☀️"],["Winter","❄️"],["Cosplay","🎭"],["School","🎒"],["Kimono","👘"],["Gothic","🦇"],["Idol","🎤"],["Wedding","💍"],["Magical Girl","🪄"],["Erotic","🍑"],["Swimsuit","👙"],["Spring","🌸"],["Autumn","🍁"],["Rainy","🌧️"],["Vampire","🧛"],["Pirate","🏴‍☠️"],["Chibi","👶"],["Traditional","🥻"],["Moon","🌙"],["Jungle","🌳"],["Police","👮"],["Gamer","🎮"]];
+var SUBMAP={}; SUBS.forEach(function(s){SUBMAP[s[0].toLowerCase()]=s[1]});
+function subName(s){if(!s)return "";var t=String(s).replace(/[^A-Za-z' -]/g,"").replace(/\s+/g," ").trim();return t||String(s)}
+function subEmoji(s){var k=subName(s).toLowerCase();return SUBMAP[k]||"✨"}
+function subTag(s){return s?'<span class="tag"><i class="em">'+subEmoji(s)+'</i>'+esc(subName(s))+'</span>':""}
+function rTag(r){return '<span class="tag r"><i class="em">'+(RE[r]||"")+'</i>'+esc(r)+'</span>'}
+function rk(r){return (r||"common").toLowerCase()}
+function hue(id){return (id*47)%360}
+var GLYPHS="星月桜空夜花風雨光雪炎夢";
+function artHtml(c,big){
+  var m="";
+  if(c.m==="p")m='<img alt="" decoding="async" '+(big?"":'loading="lazy" ')+'src="'+imgUrl(c.id)+'" onerror="this.remove()">';
+  else if(big)m='<video muted loop playsinline autoplay src="'+imgUrl(c.id)+'" onerror="this.remove()"></video>';
+  return '<div class="art" style="--h:'+hue(c.id)+'"><span class="glyph">'+GLYPHS[c.id%GLYPHS.length]+'</span>'+m+'</div>';
+}
+function cardHtml(c,i){
+  return '<button class="card" type="button" data-i="'+i+'" style="--rc:var(--c-'+rk(c.rarity)+')">'+artHtml(c)+
+   '<span class="badge"><i class="em">'+(RE[c.rarity]||"")+'</i>'+esc(c.rarity)+'</span>'+(c.qty>1?'<span class="qty">x'+c.qty+'</span>':'')+
+   (c.m!=="p"?'<span class="play"><i data-lucide="play"></i></span>':'')+
+   '<span class="cap"><b>'+esc(c.name)+'</b><span>'+(c.sub?subEmoji(c.sub)+" "+esc(subName(c.sub)):esc(c.rarity))+'</span></span></button>';
+}
+
+/* ───── collection (grouped by anime) ───── */
+var mine={cards:[],loaded:false}, st={q:"",rar:"",sub:""}, list=[], shown=0, PAGE=36, lastSeries=null, lastGrid=null, sStats={};
+function toCards(rows){return rows.map(function(a){return {id:a[0],name:a[1],series:a[2]||"Unknown",rarity:a[3],sub:a[4],qty:a[5],m:a[6]}})}
+function buildChips(){
+  var h='<button class="chip" aria-pressed="'+(st.rar===""?"true":"false")+'" data-r="">All</button>';
+  RARITIES.forEach(function(r){h+='<button class="chip" aria-pressed="'+(st.rar===r?"true":"false")+'" data-r="'+r+'"><i class="em">'+RE[r]+'</i>'+r+'</button>'});
+  $("#chips").innerHTML=h;
+  var have={}; mine.cards.forEach(function(c){if(c.sub)have[subName(c.sub)]=1});
+  var names=Object.keys(have).sort(), sh="";
+  if(names.length){
+    sh='<button class="chip" aria-pressed="'+(st.sub===""?"true":"false")+'" data-s="">All styles</button>';
+    names.forEach(function(n){sh+='<button class="chip" aria-pressed="'+(st.sub===n?"true":"false")+'" data-s="'+esc(n)+'"><i class="em">'+subEmoji(n)+'</i>'+esc(n)+'</button>'});
+  }
+  $("#subchips").innerHTML=sh; $("#subchips").hidden=!names.length;
+}
+function filtered(){
+  var q=st.q.trim().toLowerCase(), cs=mine.cards.filter(function(c){
+    if(st.rar&&c.rarity!==st.rar)return false;
+    if(st.sub&&subName(c.sub)!==st.sub)return false;
+    return !q||(c.name+" "+c.series+" "+c.id+" "+subName(c.sub)).toLowerCase().indexOf(q)>-1;
+  });
+  cs.sort(function(a,b){return a.series.localeCompare(b.series)||(RIDX[b.rarity]-RIDX[a.rarity])||a.name.localeCompare(b.name)});
+  return cs;
+}
+function appendRange(a,b){
+  var host=$("#grid");
+  for(var i=a;i<b;i++){
+    var c=list[i];
+    if(c.series!==lastSeries||!lastGrid){
+      var s=sStats[c.series], sec=document.createElement("section");
+      sec.className="series";
+      sec.innerHTML='<header class="shead"><h3>'+esc(c.series)+'</h3><span>'+s.u+' card'+(s.u===1?"":"s")+(s.c>s.u?" · "+s.c+" copies":"")+'</span></header><div class="sgrid"></div>';
+      host.appendChild(sec); lastGrid=sec.lastChild; lastSeries=c.series;
+    }
+    lastGrid.insertAdjacentHTML("beforeend",cardHtml(c,i));
+  }
+  icons();
+}
+function renderGrid(){
+  list=filtered(); shown=0; lastSeries=null; lastGrid=null; sStats={};
+  var copies=0, animes=0;
+  list.forEach(function(c){var s=sStats[c.series]; if(!s){s=sStats[c.series]={u:0,c:0};animes++} s.u++; s.c+=c.qty; copies+=c.qty});
+  $("#stats").innerHTML='<span><b>'+animes+'</b> anime</span><span><b>'+list.length+'</b> unique</span><span><b>'+copies+'</b> copies</span>';
+  var host=$("#grid");
+  if(!mine.loaded){host.innerHTML='<div class="empty">Loading cards...</div>';return}
+  if(!list.length){host.innerHTML='<div class="empty">'+(mine.cards.length?"No card matches. Clear the search or pick another filter.":"You have no cards yet. Catch your first drop in a group.")+'</div>';return}
+  host.innerHTML=""; shown=Math.min(PAGE,list.length); appendRange(0,shown);
+}
+function moreCards(){
+  if(!mine.loaded||shown>=list.length)return;
+  var end=Math.min(shown+PAGE,list.length); appendRange(shown,end); shown=end;
+}
+function loadMine(){
+  if(!INIT){$("#colSub").textContent="Open from the bot";$("#grid").innerHTML='<div class="empty">Open this app from the bot with /oweb to see your cards.</div>';return Promise.resolve()}
+  return api("/api/mycollection").then(function(r){mine.cards=toCards(r.cards);mine.loaded=true;$("#colSub").textContent="Grouped by anime";buildChips();renderGrid()})
+  .catch(function(){$("#colSub").textContent="Could not reach the bot";$("#grid").innerHTML='<div class="empty">Could not load your collection.<br><button class="btn" data-retry type="button" style="margin-top:12px">Try again</button></div>'});
+}
+
+/* ───── full view: swipe left/right for the next card, down to close ───── */
+var V={list:[],i:0,open:false};
+function viewerRender(dir){
+  var c=V.list[V.i]; if(!c)return;
+  var k=rk(c.rarity), el=$("#vcard");
+  el.style.setProperty("--rc","var(--c-"+k+")");
+  el.innerHTML=artHtml(c,true);
+  $("#vbg").style.backgroundImage=c.m==="p"?'url("'+imgUrl(c.id)+'")':"none";
+  $("#vcount").textContent=(V.i+1)+" / "+V.list.length;
+  var vi=$("#vinfo"); vi.style.setProperty("--rc","var(--c-"+k+")");
+  vi.innerHTML='<h3>'+esc(c.name)+'</h3><div class="vmeta"><span>'+esc(c.series)+'</span></div>'+
+    '<div class="vmeta">'+rTag(c.rarity)+subTag(c.sub)+'<span class="tag">ID '+c.id+'</span>'+(c.qty?'<span class="tag">x'+c.qty+' owned</span>':'')+'</div>'+
+    (V.list.length>1?'<div class="hint">Swipe to browse</div>':'');
+  icons();
+  [V.i-1,V.i+1].forEach(function(j){var n=V.list[j];if(n&&n.m==="p"){var im=new Image();im.src=imgUrl(n.id)}});
+  if(dir){el.style.transition="none";el.style.opacity="0";el.style.transform="translateX("+(dir*60)+"px)";
+    requestAnimationFrame(function(){requestAnimationFrame(function(){el.style.transition="";el.style.opacity="1";el.style.transform=""})})}
+}
+function openViewer(l,i){V.list=l;V.i=i;V.open=true;$("#viewer").hidden=false;viewerRender(0);haptic("light");history.pushState&&history.pushState({v:1},"")}
+function closeViewer(fromPop){if(!V.open)return;V.open=false;$("#viewer").hidden=true;$$("video",$("#vcard")).forEach(function(v){v.pause()});if(!fromPop&&history.state&&history.state.v)history.back()}
+function step(d){var n=V.i+d;if(n<0||n>=V.list.length){var el=$("#vcard");el.style.transform="translateX("+(-d*18)+"px)";setTimeout(function(){el.style.transform=""},160);return}V.i=n;haptic("light");viewerRender(d)}
+(function swipe(){
+  var sg=$("#stage"), x0=0,y0=0,dx=0,dy=0,on=false,axis="";
+  sg.addEventListener("pointerdown",function(e){on=true;x0=e.clientX;y0=e.clientY;dx=dy=0;axis="";$("#vcard").classList.add("drag");try{sg.setPointerCapture(e.pointerId)}catch(_){}});
+  sg.addEventListener("pointermove",function(e){
+    if(!on)return; dx=e.clientX-x0; dy=e.clientY-y0;
+    if(!axis&&(Math.abs(dx)>8||Math.abs(dy)>8))axis=Math.abs(dx)>Math.abs(dy)?"x":"y";
+    var el=$("#vcard");
+    if(axis==="x")el.style.transform="translateX("+dx+"px) rotateY("+(dx/22)+"deg)";
+    else if(axis==="y"&&dy>0){el.style.transform="translateY("+dy+"px) scale("+(1-dy/1400)+")"}
+  });
+  function end(){
+    if(!on)return; on=false; var el=$("#vcard"); el.classList.remove("drag"); el.style.transform="";
+    if(axis==="x"&&Math.abs(dx)>60)step(dx<0?1:-1);
+    else if(axis==="y"&&dy>110)closeViewer();
+  }
+  sg.addEventListener("pointerup",end); sg.addEventListener("pointercancel",end);
+})();
+document.addEventListener("keydown",function(e){
+  if(V.open){if(e.key==="Escape")closeViewer();if(e.key==="ArrowRight")step(1);if(e.key==="ArrowLeft")step(-1)}
+  else if(!$("#sheetbg").hidden&&e.key==="Escape")closeSheet();
+});
+window.addEventListener("popstate",function(){if(V.open)closeViewer(true)});
+
+/* ───── shop ───── */
+var shop={items:[],secs:0,sunday:false,balance:0,loaded:false,at:0}, overview=null, bal=0;
+function setBal(n){bal=n;$("#balBox").hidden=!INIT;$("#bal").textContent=fmt(n)}
+function setAvatar(){
+  var u=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user, box=$("#avatar"); if(!u||!INIT)return;
+  var ini=esc((u.first_name||u.username||"?").trim().charAt(0).toUpperCase());
+  box.hidden=false; box.title=u.first_name||"";
+  if(u.photo_url){box.innerHTML='<img alt="" src="'+esc(u.photo_url)+'" referrerpolicy="no-referrer">';$("img",box).addEventListener("error",function(){box.textContent=ini})}
+  else box.textContent=ini;
+}
+function itemHtml(c,i){
+  var rc="--rc:var(--c-"+rk(c.rarity)+")";
+  return '<div class="item" style="'+rc+'"><button type="button" class="art-btn" data-view="'+i+'" style="padding:0;text-align:left">'+artHtml(c)+'</button>'+
+   '<div class="body"><div style="display:flex;gap:6px;flex-wrap:wrap">'+rTag(c.rarity)+subTag(c.sub)+'</div><h4>'+esc(c.name)+'</h4><div class="s">'+esc(c.series)+'</div>'+
+   '<div class="price">'+fmt(c.price)+' <small>Nex</small></div>'+
+   (c.bought?'<button class="btn" type="button" disabled><i data-lucide="check"></i>Bought today</button>':
+    '<button class="btn pri" type="button" data-buy="'+i+'"><i data-lucide="shopping-bag"></i>Buy</button>')+'</div></div>';
+}
+function lockedHtml(r,p){
+  return '<div class="item locked" style="--rc:var(--c-'+rk(r)+')"><div class="art" style="--h:'+(RIDX[r]*40)+'"><span class="glyph">?</span></div><div class="body">'+rTag(r)+'<h4>Mystery '+r+' card</h4>'+
+   '<div class="lock"><i data-lucide="lock"></i>Sunday only</div><div class="price">'+fmt(p)+' <small>Nex</small></div></div></div>';
+}
+function renderShop(){
+  var b=$("#shopBody");
+  if(!INIT){
+    var d=overview?overview.shop.daily:[], s=overview?overview.shop.sunday:[];
+    b.innerHTML='<div class="notice"><i data-lucide="log-in"></i><br>Open this page from the bot with /oweb to see your cards and buy them.</div>'+
+      '<div class="lab">Prices</div><ul class="rules">'+d.concat(s).map(function(x){return '<li><span>'+(RE[x[0]]||"")+" "+x[0]+'</span><b>'+fmt(x[1])+' Nex</b></li>'}).join("")+'</ul>';
+    icons(); return;
+  }
+  if(!shop.loaded){b.innerHTML='<div class="notice">Loading your shop...</div>';return}
+  var h='<div class="lab"><i data-lucide="calendar-days"></i>Every day</div><div class="shelf">',sun='',sunItems=0;
+  shop.items.forEach(function(c,i){
+    var isSun=(c.rarity==="Mythic"||c.rarity==="Celestial");
+    if(isSun){sun+=itemHtml(c,i);sunItems++}else h+=itemHtml(c,i);
+  });
+  h+='</div><div class="lab"><i data-lucide="crown"></i>Sunday only</div><div class="shelf">';
+  if(sunItems)h+=sun;
+  else if(overview)h+=overview.shop.sunday.map(function(x){return lockedHtml(x[0],x[1])}).join("");
+  h+='</div>'; b.innerHTML=h; icons();
+}
+function loadShop(){
+  if(!INIT){renderShop();return Promise.resolve()}
+  return api("/api/shop").then(function(r){shop.items=r.items;shop.secs=r.secs;shop.sunday=r.sunday;shop.at=Date.now();shop.loaded=true;setBal(r.balance);renderShop()})
+   .catch(function(e){$("#shopBody").innerHTML='<div class="notice">'+esc(e.message)+'<br><button class="btn" data-shopretry type="button" style="margin-top:12px">Try again</button></div>'});
+}
+function tick(){
+  var s=shop.loaded?Math.max(0,shop.secs-Math.floor((Date.now()-shop.at)/1000)):null;
+  if(s===null){var o=(overview&&overview.shop.utcOffsetMin)||0, n=new Date(Date.now()+o*60000), nx=Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate()+1);s=Math.max(0,Math.floor((nx-n.getTime())/1000))}
+  else if(s===0&&shop.loaded&&!tick.reload){tick.reload=1;setTimeout(function(){tick.reload=0;loadShop()},1500)}
+  var h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60,p=function(v){return v<10?"0"+v:""+v};
+  $("#reset").textContent=p(h)+":"+p(m)+":"+p(x);
+}
+function openSheet(html){$("#sheet").innerHTML=html;$("#sheetbg").hidden=false;icons()}
+function closeSheet(){$("#sheetbg").hidden=true}
+function buySheet(i){
+  var c=shop.items[i]; if(!c)return;
+  var after=bal-c.price, poor=after<0;
+  openSheet('<h3>Confirm purchase</h3><div class="sprev" style="--rc:var(--c-'+rk(c.rarity)+')">'+artHtml(c)+'<div class="t"><b>'+esc(c.name)+'</b><span>'+esc(c.series)+'</span><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">'+rTag(c.rarity)+subTag(c.sub)+'</div></div></div>'+
+   '<div class="rows"><div><span>Price</span><b>'+fmt(c.price)+' Nex</b></div><div><span>Your balance</span><b>'+fmt(bal)+' Nex</b></div><div><span>After buying</span><b style="color:'+(poor?"var(--bad)":"var(--fg)")+'">'+fmt(after)+' Nex</b></div></div>'+
+   '<div class="swipe'+(poor?" off":"")+'" id="swipe"><div class="swipe-fill"></div><div class="swipe-txt">'+(poor?"Not enough Nex":"Swipe to purchase")+'</div><button type="button" class="knob" aria-label="Swipe to purchase"'+(poor?" disabled":"")+'><i data-lucide="chevrons-right"></i></button></div>'+
+   '<button class="btn wide" type="button" data-close>Cancel</button>');
+  if(!poor)initSwipe(i);
+}
+function initSwipe(i){
+  var sw=$("#swipe"); if(!sw)return;
+  var k=$(".knob",sw), f=$(".swipe-fill",sw), t=$(".swipe-txt",sw);
+  var max=Math.max(1,sw.clientWidth-k.offsetWidth-10), x=0, x0=0, on=false, fired=false;
+  function set(v,anim){x=Math.max(0,Math.min(max,v));k.style.transition=f.style.transition=anim?"transform .25s ease,width .25s ease":"none";k.style.transform="translateX("+x+"px)";f.style.width=(x+k.offsetWidth+10)+"px";t.style.opacity=String(Math.max(0,1-x/(max*.7)))}
+  function fire(){if(fired)return;fired=true;set(max,true);haptic("medium");sw.classList.add("busy");t.style.opacity="1";t.textContent="Processing...";buy(i)}
+  k.addEventListener("pointerdown",function(e){if(fired)return;on=true;x0=e.clientX-x;try{k.setPointerCapture(e.pointerId)}catch(_){}});
+  k.addEventListener("pointermove",function(e){if(!on||fired)return;set(e.clientX-x0,false)});
+  function up(){if(!on)return;on=false;if(x>=max*.88)fire();else set(0,true)}
+  k.addEventListener("pointerup",up); k.addEventListener("pointercancel",up);
+  k.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();fire()}});
+}
+function buy(i){
+  var c=shop.items[i]; if(!c)return;
+  api("/api/shop/buy",{id:c.id}).then(function(r){
+    setBal(r.balance);
+    if(r.status==="ok"){
+      c.bought=true; haptic("ok"); renderShop(); loadMine();
+      openSheet('<div class="done"><div class="tick"><i data-lucide="check"></i></div><h3>Purchased</h3><div class="sprev" style="--rc:var(--c-'+rk(c.rarity)+')">'+artHtml(c)+'<div class="t"><b>'+esc(c.name)+'</b><span>'+esc(c.series)+'</span></div></div><span class="sub">Added to your collection.</span></div><button class="btn pri wide" type="button" data-close>Nice</button>');
+    }else{haptic("err");closeSheet();toast(r.message);if(r.status!=="poor")loadShop()}
+  }).catch(function(e){haptic("err");closeSheet();toast(e.message)});
+}
+
+/* ───── mines ───── */
+var G={bet:100,mines:3,game:null,over:null,busy:false,minCash:3,rtp:.97,min:10,max:50000};
+var SVG={
+  gem:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M11 3 8 9l4 12 4-12-3-6"/><path d="M2 9h20"/></svg>',
+  bomb:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="13" r="8"/><path d="m18.5 5.5 2-2M14 6l1.5-1.5M20 8l1 1"/><path d="M15.5 4.5 17 6"/></svg>'
+};
+function multPreview(n,k){var p=1;for(var i=0;i<k;i++)p*=(25-n-i)/(25-i);return p>0?Math.floor(G.rtp/p*100)/100:0}
+function risk(n){return n<=4?"Low":(n<=10?"Medium":(n<=17?"High":"Extreme"))}
+function pct(n){return ((n-1)/23*100).toFixed(1)+"%"}
+function previewBoard(){var h='<div class="board">';for(var i=0;i<25;i++)h+='<div class="tile idle">'+SVG.gem+'</div>';return h+'</div>'}
+function minesSetup(){
+  return '<div class="balcard"><div class="l"><span class="ic"><i data-lucide="wallet"></i></span><div><small>Balance</small><b>'+fmt(bal)+'</b></div></div><span class="pill">Nex</span></div>'+
+   '<div class="panel">'+previewBoard()+
+   '<div><div class="fl"><span>Bet</span><span>'+fmt(G.min)+' to '+fmt(G.max)+'</span></div>'+
+   '<div class="stepper"><button type="button" data-bet="-1" aria-label="Lower bet">-</button><input id="betIn" inputmode="numeric" value="'+G.bet+'" aria-label="Bet"><button type="button" data-bet="1" aria-label="Raise bet">+</button></div>'+
+   '<div class="quick">'+[10,50,100,500,1000].map(function(v){return '<button type="button" data-setbet="'+v+'">'+fmt(v)+'</button>'}).join("")+'<button type="button" data-setbet="half">1/2</button><button type="button" data-setbet="max">Max</button></div></div>'+
+   '<div><div class="fl"><span>Mines</span><b id="mnVal">'+G.mines+'</b></div>'+
+   '<input type="range" id="mnRange" min="1" max="24" value="'+G.mines+'" style="--p:'+pct(G.mines)+'" aria-label="Mines">'+
+   '<div class="mrow"><span>Risk <b id="mnRisk">'+risk(G.mines)+'</b></span><span>First tile <b id="mnNext">'+multPreview(G.mines,1).toFixed(2)+'x</b></span></div></div>'+
+   '<button class="btn pri wide" type="button" id="mPlay" style="padding:15px"'+(G.busy?" disabled":"")+'><i data-lucide="play"></i>Start game</button></div>';
+}
+function boardHtml(g,final){
+  var h='<div class="board">', picked={}, mines={};
+  (g.picked||[]).forEach(function(i){picked[i]=1}); if(final)(final.mines||[]).forEach(function(i){mines[i]=1});
+  for(var i=0;i<25;i++){
+    var cls="tile",inner="",dis=(final||G.busy)?" disabled":"";
+    if(picked[i]){cls+=" safe";inner=SVG.gem;dis=" disabled"}
+    else if(final&&final.hit===i){cls+=" bomb";inner=SVG.bomb}
+    else if(final&&mines[i]){cls+=" dim";inner=SVG.bomb}
+    h+='<button type="button" class="'+cls+'" data-t="'+i+'" aria-label="Tile '+(i+1)+'"'+dis+'>'+inner+'</button>';
+  }
+  return h+'</div>';
+}
+function ladderHtml(g){
+  var h='<div class="ladder">', n=g.picked.length;
+  for(var k=1;k<=5;k++){var m=multPreview(g.mines,n+k);if(m<=0)break;h+='<span'+(k===1?' class="n"':'')+'>'+m.toFixed(2)+'x</span>'}
+  return h+'</div>';
+}
+function renderMines(){
+  var b=$("#minesBody");
+  if(!INIT){b.innerHTML='<div class="notice"><i data-lucide="log-in"></i><br>Open this page from the bot with /oweb to play Mines with your Nex.</div><div style="height:14px"></div>'+rulesHtml();icons();return}
+  var out="";
+  if(G.game){
+    var g=G.game, can=g.picked.length>=g.minCashout;
+    out='<div class="balcard"><div class="l"><span class="ic"><i data-lucide="wallet"></i></span><div><small>Balance</small><b>'+fmt(bal)+'</b></div></div><span class="pill">Bet '+fmt(g.bet)+' · '+g.mines+' mines</span></div>'+
+      '<div class="panel"><div class="hud"><div><span>Cash out</span><b>'+fmt(g.value)+'</b></div><div class="big"><span>Multiplier</span><b>'+g.mult.toFixed(2)+'x</b></div><div><span>Next</span><b>'+(g.next?g.next.toFixed(2)+"x":"-")+'</b></div></div>'+
+      ladderHtml(g)+boardHtml(g,null)+
+      '<button class="btn ok wide" type="button" id="mCash" style="padding:15px"'+((can&&!G.busy)?"":" disabled")+'><i data-lucide="wallet"></i>'+(can?"Cash out "+fmt(g.value)+" Nex":"Open "+(g.minCashout-g.picked.length)+" more to cash out")+'</button></div>';
+  }else if(G.over){
+    var o=G.over, win=o.result!=="boom";
+    out='<div class="panel"><div class="banner '+(win?"win":"lose")+'">'+(o.result==="boom"?"Boom. You hit a mine.":(o.result==="clear"?"Board cleared!":(o.result==="timeout"?"Timed out":"Cashed out")))+
+      '<small>'+(o.result==="boom"?"Lost "+fmt(o.bet)+" Nex":(o.payout>=o.bet?"+"+fmt(o.payout-o.bet)+" Nex profit · ":"")+fmt(o.payout)+" Nex at "+o.mult.toFixed(2)+"x")+'</small></div>'+
+      boardHtml({picked:o.picked},o)+'<button class="btn pri wide" type="button" id="mAgain" style="padding:15px"><i data-lucide="rotate-ccw"></i>Play again</button></div>';
+  }else out=minesSetup();
+  b.innerHTML=out+(G.game?"":'<div style="height:2px"></div>'+rulesHtml()); icons();
+}
+function rulesHtml(){
+  var m=overview&&overview.games.mines; if(!m)return "";
+  return '<ul class="rules"><li><span>Bet</span><b>'+fmt(m.minBet)+' to '+fmt(m.maxBet)+' Nex</b></li><li><span>Mines</span><b>1 to 24</b></li><li><span>Cash out unlocks after</span><b>'+m.minCashout+' safe tiles</b></li><li><span>Payout</span><b>'+Math.round(m.rtp*100)+'% return</b></li><li><span>Idle for '+Math.round(m.timeout/60)+' min</span><b>Auto cash out</b></li></ul>';
+}
+function clampBet(v){v=parseInt(v,10)||G.min;return Math.max(G.min,Math.min(G.max,v))}
+function readInputs(){var b=$("#betIn"),m=$("#mnRange");if(b)G.bet=clampBet(b.value);if(m)G.mines=Math.max(1,Math.min(24,parseInt(m.value,10)||3))}
+function gameApply(r){
+  if(r.over){G.game=null;G.over=r;setBal(r.balance);haptic(r.result==="boom"?"err":"ok");if(r.result==="boom")haptic("heavy")}
+  else{G.game=r.game;G.over=null;if(r.balance!=null)setBal(r.balance);haptic("light")}
+  G.busy=false; renderMines();
+}
+function minesErr(e){G.busy=false;haptic("err");toast(e.message);renderMines();if(e.status===404)loadMinesState()}
+function loadMinesState(){
+  if(!INIT)return Promise.resolve();
+  return api("/api/mines/state").then(function(r){
+    if(r.balance!=null)setBal(r.balance);
+    if(r.ended){G.game=null;G.over=r.ended}else{G.game=r.game||null}
+    if(r.busyInChat)toast("Finish your /mines game in the chat first.");
+    renderMines();
+  }).catch(function(){});
+}
+function minesClick(e){
+  var t=e.target.closest("button"); if(!t||G.busy)return;
+  if(t.hasAttribute("data-bet")){readInputs();var stp=G.bet<100?10:(G.bet<1000?50:500);G.bet=clampBet(G.bet+stp*Number(t.getAttribute("data-bet")));$("#betIn").value=G.bet;return}
+  if(t.hasAttribute("data-setbet")){var v=t.getAttribute("data-setbet");readInputs();G.bet=clampBet(v==="max"?Math.min(bal,G.max):(v==="half"?Math.floor(G.bet/2):v));renderMines();return}
+  if(t.id==="mPlay"){readInputs();G.busy=true;renderMines();api("/api/mines/start",{bet:G.bet,mines:G.mines}).then(gameApply).catch(minesErr);return}
+  if(t.id==="mAgain"){G.over=null;renderMines();return}
+  if(t.id==="mCash"){G.busy=true;renderMines();api("/api/mines/cash",{}).then(gameApply).catch(minesErr);return}
+  if(t.hasAttribute("data-t")){G.busy=true;haptic("light");t.disabled=true;api("/api/mines/open",{i:Number(t.getAttribute("data-t"))}).then(gameApply).catch(minesErr)}
+}
+function minesInput(e){
+  var el=e.target;
+  if(el.id==="betIn"){var r=el.value.replace(/\D/g,"");if(r!==el.value)el.value=r}
+  else if(el.id==="mnRange"){
+    G.mines=Math.max(1,Math.min(24,parseInt(el.value,10)||3)); el.style.setProperty("--p",pct(G.mines));
+    $("#mnVal").textContent=G.mines; $("#mnRisk").textContent=risk(G.mines); $("#mnNext").textContent=multPreview(G.mines,1).toFixed(2)+"x";
+  }
+}
+
+/* ───── guide ───── */
+function buildGuide(){
+  $("#rarGrid").innerHTML=RARITIES.map(function(r){return '<div class="rcell"><i class="em">'+RE[r]+'</i><span>'+r+'</span></div>'}).join("");
+  $("#subGrid").innerHTML=SUBS.map(function(s){return '<div class="rcell"><i class="em">'+s[1]+'</i><span>'+s[0]+'</span></div>'}).join("");
+}
+
+/* ───── pager ───── */
+var pager=$("#pager"), tabs=$$("#dock button"), curTab=0;
+function setTab(i,fromScroll){
+  if(i===curTab&&fromScroll)return; curTab=i;
+  tabs.forEach(function(b,j){b.setAttribute("aria-selected",String(j===i))});
+  if(i===1&&!shop.loaded)loadShop(); if(i===1&&shop.loaded&&Date.now()-shop.at>60000)loadShop();
+  if(i===2)loadMinesState();
+}
+pager.addEventListener("scroll",function(){var i=Math.round(pager.scrollLeft/Math.max(1,pager.clientWidth));if(i!==curTab)setTab(i,true)},{passive:true});
+tabs.forEach(function(b){b.addEventListener("click",function(){var i=Number(b.getAttribute("data-i"));pager.scrollTo({left:i*pager.clientWidth,behavior:"smooth"});haptic("light")})});
+window.addEventListener("resize",function(){pager.scrollLeft=curTab*pager.clientWidth});
+
+/* ───── wiring ───── */
+function wire(){
+  $("#q").addEventListener("input",function(e){st.q=e.target.value;renderGrid()});
+  $("#chips").addEventListener("click",function(e){var b=e.target.closest(".chip");if(!b)return;st.rar=b.getAttribute("data-r");buildChips();renderGrid()});
+  $("#subchips").addEventListener("click",function(e){var b=e.target.closest(".chip");if(!b)return;st.sub=b.getAttribute("data-s");buildChips();renderGrid()});
+  $("#grid").addEventListener("click",function(e){
+    if(e.target.closest("[data-retry]"))return loadMine();
+    var b=e.target.closest(".card");if(b)openViewer(list,Number(b.getAttribute("data-i")));
+  });
+  new IntersectionObserver(function(en){if(en[0].isIntersecting)moreCards()},{root:$("#p0"),rootMargin:"600px"}).observe($("#more"));
+  $("#vclose").addEventListener("click",function(){closeViewer()});
+  $("#vprev").addEventListener("click",function(){step(-1)}); $("#vnext").addEventListener("click",function(){step(1)});
+  $("#shopBody").addEventListener("click",function(e){
+    if(e.target.closest("[data-shopretry]"))return loadShop();
+    var v=e.target.closest("[data-view]");if(v){openViewer(shop.items.map(function(c){return {id:c.id,name:c.name,series:c.series,rarity:c.rarity,sub:c.sub,qty:0,m:c.m}}),Number(v.getAttribute("data-view")));return}
+    var b=e.target.closest("[data-buy]");if(b)buySheet(Number(b.getAttribute("data-buy")));
+  });
+  $("#sheetbg").addEventListener("click",function(e){
+    if(e.target.id==="sheetbg"||e.target.closest("[data-close]"))closeSheet();
+  });
+  $("#minesBody").addEventListener("click",minesClick); $("#minesBody").addEventListener("input",minesInput);
+}
+
+/* ───── intro: CSS animated, shown once per session, always removes itself ───── */
+var reduced=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+function seen(){try{return sessionStorage.getItem("nx-intro")==="1"}catch(e){return false}}
+function mark(){try{sessionStorage.setItem("nx-intro","1")}catch(e){}}
+function runIntro(){
+  var intro=$("#intro"), done=false;
+  function finish(){if(done)return;done=true;mark();intro.classList.add("out");setTimeout(function(){intro.remove()},500)}
+  $("#skip").addEventListener("click",finish);
+  setTimeout(finish,2700);
+}
+
+function init(){
+  buildChips(); renderGrid(); setAvatar(); renderShop(); renderMines(); buildGuide(); wire(); icons(); setInterval(tick,1000); tick();
+  var logo=$("#logoImg"),srcs=BASES.map(function(b){return b+"/logo.png"}).concat([IBB]),k=0;
+  logo.addEventListener("load",function(){logo.classList.add("ok")});
+  logo.addEventListener("error",function(){if(++k<srcs.length)logo.src=srcs[k]});
+  logo.src=srcs[0];
+  if(seen()||reduced){var i=$("#intro");if(i)i.remove()}else runIntro();
+
+  baseReady.then(function(){
+    api("/api/overview").then(function(o){
+      overview=o; G.rtp=o.games.mines.rtp; G.min=o.games.mines.minBet; G.max=o.games.mines.maxBet; G.mines=o.games.mines.default; G.minCash=o.games.mines.minCashout;
+      $("#dMin").textContent=o.drop.min; $("#dMax").textContent=o.drop.max; renderShop(); renderMines(); tick();
+    }).catch(function(){});
+    loadMine();
+    if(INIT){api("/api/me").then(function(m){setBal(m.nex)}).catch(function(){}); loadShop(); loadMinesState()}
+  });
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
+})();
+</script>
+</body>
+</html>

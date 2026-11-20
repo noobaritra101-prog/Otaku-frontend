@@ -7,7 +7,9 @@
 <title>Otaku Nexus</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="preconnect" href="https://otaku-production-4e8152dc.up.railway.app" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@700;800&family=Plus+Jakarta+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@700;800&family=Plus+Jakarta+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap"></noscript>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://sad.adsgram.ai/js/sad.min.js" async></script>
 <style>
@@ -30,6 +32,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:400 15p
 button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
 input,select{font:inherit;color:var(--fg)}
 :focus-visible{outline:2px solid var(--silver);outline-offset:2px;border-radius:8px}
+i[data-lucide]{display:inline-block;width:1.2em;height:1.2em;vertical-align:-.2em}
 svg.lucide{width:1.2em;height:1.2em;stroke-width:1.8;vertical-align:-.2em}
 [hidden]{display:none!important}
 .em{font-style:normal;line-height:1}
@@ -39,16 +42,16 @@ svg.lucide{width:1.2em;height:1.2em;stroke-width:1.8;vertical-align:-.2em}
 #intro.out{opacity:0;pointer-events:none}
 #intro::before{content:"";position:absolute;inset:0;background:radial-gradient(55% 45% at 50% 46%,rgba(198,203,212,.10),transparent 70%)}
 .ibox{position:relative;display:flex;flex-direction:column;align-items:center;gap:30px}
-.pic{position:relative;width:clamp(150px,44vw,210px);aspect-ratio:1;opacity:0;transform:scale(.9);animation:iIn .8s .1s cubic-bezier(.2,.8,.2,1) forwards}
+.pic{position:relative;width:clamp(150px,44vw,210px);aspect-ratio:1;opacity:0;transform:scale(.9);animation:iIn .5s .05s cubic-bezier(.2,.8,.2,1) forwards}
 .pic img{position:absolute;inset:10px;width:calc(100% - 20px);height:calc(100% - 20px);border-radius:50%;object-fit:cover;opacity:0;transition:opacity .4s}
 .pic img.ok{opacity:1}
 .pic .core{position:absolute;inset:10px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#2a2a2e,#101012);border:1px solid var(--line2)}
 .pic svg.ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
-.pic svg.ring circle{fill:none;stroke:var(--silver);stroke-width:1.6;stroke-linecap:round;stroke-dasharray:302;stroke-dashoffset:302;animation:iDraw 1.4s .25s cubic-bezier(.4,0,.2,1) forwards}
+.pic svg.ring circle{fill:none;stroke:var(--silver);stroke-width:1.6;stroke-linecap:round;stroke-dasharray:302;stroke-dashoffset:302;animation:iDraw .8s .15s cubic-bezier(.4,0,.2,1) forwards}
 .pic svg.ring circle.base{stroke:rgba(198,203,212,.12);stroke-dashoffset:0;animation:none}
-.iword{font:800 clamp(26px,8vw,40px)/1.15 var(--display);text-align:center;color:var(--silver2);opacity:0;transform:translateY(8px);animation:iIn .7s .75s cubic-bezier(.2,.8,.2,1) forwards}
+.iword{font:800 clamp(26px,8vw,40px)/1.15 var(--display);text-align:center;color:var(--silver2);opacity:0;transform:translateY(8px);animation:iIn .45s .4s cubic-bezier(.2,.8,.2,1) forwards}
 .ibar{position:absolute;left:50%;bottom:calc(11vh + env(safe-area-inset-bottom,0px));width:min(180px,46vw);height:2px;margin-left:calc(min(180px,46vw)/-2);border-radius:2px;background:rgba(198,203,212,.12);overflow:hidden}
-.ibar i{display:block;height:100%;width:100%;background:var(--silverGrad);transform-origin:left;transform:scaleX(0);animation:iBar 2.3s .1s linear forwards}
+.ibar i{display:block;height:100%;width:100%;background:var(--silverGrad);transform-origin:left;transform:scaleX(0);animation:iBar 1.3s .05s linear forwards}
 .skip{position:absolute;right:16px;top:calc(16px + env(safe-area-inset-top,0px));background:rgba(255,255,255,.04);border:1px solid var(--line2);border-radius:999px;padding:8px 14px;color:var(--silver);font-size:13px;display:flex;gap:8px;align-items:center}
 @keyframes iIn{to{opacity:1;transform:none}}
 @keyframes iDraw{to{stroke-dashoffset:0}}
@@ -97,7 +100,7 @@ h2{font:800 26px/1.15 var(--display);margin:0 0 4px}
 .chip{flex:none;display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--mute);font-size:13px;white-space:nowrap}
 .chip[aria-pressed="true"]{color:#0a0a0b;background:var(--silverGrad);border-color:transparent;font-weight:700}
 .stats{display:flex;gap:18px;color:var(--mute);font-size:13px;margin:6px 0 4px}.stats b{color:var(--fg);font-variant-numeric:tabular-nums}
-.series{margin-top:20px}
+.series{margin-top:20px;content-visibility:auto;contain-intrinsic-size:auto 420px}
 .shead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 2px 10px;margin-bottom:12px;border-bottom:1px solid var(--line)}
 .shead h3{margin:0;font:800 18px/1.2 var(--display);overflow-wrap:anywhere;color:var(--silver2)}
 .shead span{flex:none;font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
@@ -127,12 +130,12 @@ h2{font:800 26px/1.15 var(--display);margin:0 0 4px}
 .vtop .count{font:500 13px var(--mono);color:var(--silver);padding:6px 12px;border-radius:999px;background:rgba(8,8,9,.6);border:1px solid var(--line2)}
 .round{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(8,8,9,.6);border:1px solid var(--line2);backdrop-filter:blur(8px)}
 .stage{position:absolute;inset:0;z-index:1;display:grid;place-items:center;perspective:1100px;padding:calc(62px + env(safe-area-inset-top,0px)) 14px calc(20px + env(safe-area-inset-bottom,0px))}
-.vcard{position:relative;width:fit-content;min-width:min(100%,300px);max-width:min(100%,430px);max-height:100%;overflow:hidden;--rc:var(--c-common);background:var(--panel);border:1px solid color-mix(in srgb,var(--rc) 55%,transparent);border-radius:24px;box-shadow:0 30px 80px -20px rgba(0,0,0,.85),0 0 40px -18px var(--rc);transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .28s;will-change:transform}
+.vcard{position:relative;width:fit-content;min-width:min(100%,240px);max-width:min(100%,430px);max-height:100%;overflow:hidden;--rc:var(--c-common);background:var(--panel);border:1px solid color-mix(in srgb,var(--rc) 55%,transparent);border-radius:24px;box-shadow:0 30px 80px -20px rgba(0,0,0,.85),0 0 40px -18px var(--rc);transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .28s;will-change:transform}
 .vcard.drag{transition:none}
 .vcard .art{position:relative;aspect-ratio:auto;height:auto;background:var(--panel);display:flex;justify-content:center}
 .vcard .art:not(:has(img)):not(:has(video)){min-height:300px;display:grid;place-items:center;background:radial-gradient(90% 70% at 50% 25%,hsl(var(--h) 14% 24%),hsl(var(--h) 10% 11%) 65%,#09090a)}
 .vcard .art:has(img) .glyph,.vcard .art:has(video) .glyph{display:none}
-.vcard .art img,.vcard .art video{position:relative;inset:auto;display:block;width:auto;max-width:100%;height:auto;max-height:calc(100vh - 290px);max-height:calc(100dvh - 290px);min-height:200px;object-fit:contain;object-position:center;image-rendering:auto;-webkit-user-drag:none;user-select:none}
+.vcard .art img,.vcard .art video{position:relative;inset:auto;display:block;width:auto;max-width:100%;height:auto;max-height:calc(100vh - 330px);max-height:calc(100dvh - 330px);min-height:200px;object-fit:contain;object-position:center;image-rendering:auto;-webkit-user-drag:none;user-select:none}
 .vcard .glyph{font-size:120px}
 .vbody{display:grid;gap:9px;justify-items:center;text-align:center;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px)*0);pointer-events:none;border-top:1px solid var(--line)}
 .vbody h3{font:800 21px/1.15 var(--display);margin:0;overflow-wrap:anywhere}
@@ -362,7 +365,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 <div id="sheetbg" hidden><div id="sheet" role="dialog" aria-modal="true"></div></div>
 <div id="toast" role="status" aria-live="polite"></div>
 
-<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js" async onload="window.__lu=1;document.dispatchEvent(new Event('lucide-ready'))"></script>
 <script>
 (function(){
 "use strict";
@@ -378,22 +381,15 @@ function toast(t){var el=$("#toast");el.textContent=t;el.classList.add("on");cle
 /* ───── backend ───── */
 var IBB="https://i.ibb.co/5gbmM7LJ/file-0000000010188246861284ef1e5f1f15.png";
 var RAILWAY="https://otaku-production-4e8152dc.up.railway.app";
-var BASES=(location.protocol==="http:"||location.protocol==="https:")?["",RAILWAY]:[RAILWAY];
-var API=null;
+var RAILWAY_HOST=""; try{RAILWAY_HOST=new URL(RAILWAY).hostname}catch(e){}
+var BASES=(location.hostname===RAILWAY_HOST)?[""]:[RAILWAY];
+var API=BASES[0];
 function withTimeout(p,ms){return new Promise(function(res,rej){var t=setTimeout(function(){rej(new Error("timeout"))},ms);p.then(function(v){clearTimeout(t);res(v)},function(e){clearTimeout(t);rej(e)})})}
-var baseReady=(function(){
-  var i=0;
-  function next(){
-    if(i>=BASES.length){API=BASES[BASES.length-1];return Promise.resolve()}
-    var b=BASES[i++];
-    return withTimeout(fetch(b+"/health",{cache:"no-store"}).then(function(r){return r.text()}),7000).then(function(t){if(t.trim()==="ok"){API=b}else return next()},next);
-  }
-  return next();
-})();
+var baseReady=Promise.resolve();
 function api(path,body){
   return baseReady.then(function(){
     var h={}; if(INIT)h["X-Init-Data"]=INIT; if(body)h["Content-Type"]="application/json";
-    return fetch(API+path,{method:body?"POST":"GET",headers:h,body:body?JSON.stringify(body):undefined,cache:"no-store"});
+    return withTimeout(fetch(API+path,{method:body?"POST":"GET",headers:h,body:body?JSON.stringify(body):undefined,cache:"no-store"}),20000);
   }).then(function(r){return r.json().catch(function(){return {}}).then(function(j){if(!r.ok){var e=new Error(j.error||"Something went wrong.");e.status=r.status;throw e}return j})});
 }
 function imgUrl(id){return API+"/api/img/"+id}
@@ -411,10 +407,20 @@ function rTag(r){return '<span class="tag r"><i class="em">'+(RE[r]||"")+'</i>'+
 function rk(r){return (r||"common").toLowerCase()}
 function hue(id){return (id*47)%360}
 var GLYPHS="星月桜空夜花風雨光雪炎夢";
+/* size the picture/video in the box to its own ratio so there are no bars at the sides */
+function nxFit(el){
+  var box=$("#vcard"); if(!box||!el||!box.contains(el))return;
+  var nw=el.naturalWidth||el.videoWidth, nh=el.naturalHeight||el.videoHeight; if(!nw||!nh)return;
+  var maxW=Math.min(window.innerWidth-28,430), maxH=Math.max(200,window.innerHeight-330), k=Math.min(maxW/nw,maxH/nh),
+      w=Math.round(nw*k), h=Math.round(nh*k);
+  el.style.cssText+=";width:"+w+"px;height:"+h+"px;max-width:none;max-height:none;min-height:0";
+  box.style.width=Math.max(w,240)+"px";
+}
+window.nxFit=nxFit;
 function artHtml(c,big){
   var m="";
-  if(c.m==="p")m='<img alt="" decoding="async" '+(big?"":'loading="lazy" ')+'src="'+imgUrl(c.id)+'" onerror="this.remove()">';
-  else if(big)m='<video muted loop playsinline autoplay src="'+imgUrl(c.id)+'" onerror="this.remove()"></video>';
+  if(c.m==="p")m='<img alt="" decoding="async" '+(big?'fetchpriority="high" onload="nxFit(this)" ':'loading="lazy" ')+'src="'+imgUrl(c.id)+'" onerror="this.remove()">';
+  else if(big)m='<video muted loop playsinline autoplay onloadedmetadata="nxFit(this)" src="'+imgUrl(c.id)+'" onerror="this.remove()"></video>';
   return '<div class="art" style="--h:'+hue(c.id)+'"><span class="glyph">'+GLYPHS[c.id%GLYPHS.length]+'</span>'+m+'</div>';
 }
 function cardHtml(c,i){
@@ -425,7 +431,7 @@ function cardHtml(c,i){
 }
 
 /* ───── collection (grouped by anime) ───── */
-var mine={cards:[],loaded:false}, st={q:"",rar:"",sub:""}, list=[], shown=0, PAGE=36, lastSeries=null, lastGrid=null, sStats={};
+var mine={cards:[],loaded:false}, st={q:"",rar:"",sub:""}, list=[], shown=0, PAGE=24, lastSeries=null, lastGrid=null, sStats={};
 function toCards(rows){return rows.map(function(a){return {id:a[0],name:a[1],series:a[2]||"Unknown",rarity:a[3],sub:a[4],qty:a[5],m:a[6]}})}
 function buildChips(){
   var h='<button class="chip" aria-pressed="'+(st.rar===""?"true":"false")+'" data-r="">All</button>';
@@ -543,9 +549,16 @@ function moreCards(){
   if(!mine.loaded||shown>=list.length)return;
   var end=Math.min(shown+PAGE,list.length); appendRange(shown,end); shown=end;
 }
+var CKEY="nx-col-"+((tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.id)||"u"), colSig="";
+function showCached(){
+  if(!INIT)return;
+  try{var j=localStorage.getItem(CKEY); if(!j)return; var rows=JSON.parse(j); if(!rows||!rows.length)return;
+    colSig=j; mine.cards=toCards(rows); mine.loaded=true; $("#colSub").textContent="Grouped by anime"; buildChips(); renderGrid();
+  }catch(e){}
+}
 function loadMine(){
   if(!INIT){$("#colSub").textContent="Open from the bot";$("#grid").innerHTML='<div class="empty">Open this app from the bot with /oweb to see your cards.</div>';return Promise.resolve()}
-  return api("/api/mycollection").then(function(r){mine.cards=toCards(r.cards);mine.loaded=true;$("#colSub").textContent="Grouped by anime";buildChips();renderGrid()})
+  return api("/api/mycollection").then(function(r){var sig=JSON.stringify(r.cards); try{localStorage.setItem(CKEY,sig)}catch(e){} if(sig===colSig&&mine.loaded)return; colSig=sig; mine.cards=toCards(r.cards);mine.loaded=true;$("#colSub").textContent="Grouped by anime";buildChips();renderGrid()})
   .catch(function(){$("#colSub").textContent="Could not reach the bot";$("#grid").innerHTML='<div class="empty">Could not load your collection.<br><button class="btn" data-retry type="button" style="margin-top:12px">Try again</button></div>'});
 }
 
@@ -570,7 +583,7 @@ var V={list:[],i:0,open:false};
 function viewerRender(dir){
   var c=V.list[V.i]; if(!c)return;
   var k=rk(c.rarity), el=$("#vcard");
-  el.style.setProperty("--rc","var(--c-"+k+")");
+  el.style.setProperty("--rc","var(--c-"+k+")"); el.style.width="";
   $("#vbg").style.backgroundImage=c.m==="p"?'url("'+imgUrl(c.id)+'")':"none";
   $("#vcount").textContent=(V.i+1)+" / "+V.list.length;
   var info='<div class="vbody"><h3>'+esc(c.name)+'</h3><div class="vmeta"><span>'+esc(c.series)+'</span></div>'+
@@ -607,6 +620,7 @@ document.addEventListener("keydown",function(e){
   if(V.open){if(e.key==="Escape")closeViewer();if(e.key==="ArrowRight")step(1);if(e.key==="ArrowLeft")step(-1)}
   else if(!$("#sheetbg").hidden&&e.key==="Escape")closeSheet();
 });
+window.addEventListener("resize",function(){if(V.open){var m=$("#vcard img,#vcard video");if(m){m.style.width=m.style.height="";nxFit(m)}}});
 window.addEventListener("popstate",function(){if(V.open)closeViewer(true)});
 
 /* ───── shop ───── */
@@ -843,15 +857,16 @@ function runIntro(){
   var intro=$("#intro"), done=false;
   function finish(){if(done)return;done=true;mark();intro.classList.add("out");setTimeout(function(){intro.remove()},500)}
   $("#skip").addEventListener("click",finish);
-  setTimeout(finish,2700);
+  setTimeout(finish,1500);
 }
 
 function init(){
-  buildChips(); renderGrid(); setAvatar(); renderShop(); renderMines(); buildGuide(); wire(); icons(); setInterval(tick,1000); tick();
+  showCached(); buildChips(); renderGrid(); setAvatar(); renderShop(); renderMines(); buildGuide(); wire(); icons(); setInterval(tick,1000); tick();
   var logo=$("#logoImg"),srcs=BASES.map(function(b){return b+"/logo.png"}).concat([IBB]),k=0;
   logo.addEventListener("load",function(){logo.classList.add("ok")});
   logo.addEventListener("error",function(){if(++k<srcs.length)logo.src=srcs[k]});
   logo.src=srcs[0];
+  document.addEventListener("lucide-ready",icons); if(window.__lu)icons();
   if(seen()||reduced){var i=$("#intro");if(i)i.remove()}else runIntro();
 
   baseReady.then(function(){

@@ -638,6 +638,7 @@ input[type=range]::-webkit-slider-thumb,input[type=range]::-moz-range-thumb{back
 .wbar i{display:block;height:100%;width:100%;background:var(--silverGrad);transform-origin:left;transform:scaleX(0)}
 #welcome.go .wbar i{animation:wfill 10s linear forwards}
 @keyframes wfill{to{transform:scaleX(1)}}
+.core .mono{position:absolute;inset:18%;width:64%;height:64%}
 </style>
 </head>
 <body>
@@ -645,7 +646,7 @@ input[type=range]::-webkit-slider-thumb,input[type=range]::-moz-range-thumb{back
 <div id="intro" aria-label="Otaku Nexus intro">
   <div class="ibox" id="logo">
     <div class="pic" id="logoPic">
-      <div class="core"></div>
+      <div class="core"><svg class="mono" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eceef2"/><stop offset="1" stop-color="#8fa7ff"/></linearGradient></defs><text x="50" y="64" text-anchor="middle" font-size="46" font-weight="800" font-family="Georgia,serif" fill="url(#mg)">ON</text></svg></div>
       <img id="logoImg" alt="Otaku Nexus" decoding="async">
       <svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="base" cx="50" cy="50" r="48"/><circle cx="50" cy="50" r="48"/></svg>
     </div>
@@ -665,7 +666,7 @@ input[type=range]::-webkit-slider-thumb,input[type=range]::-moz-range-thumb{back
       <div class="wbar" aria-hidden="true"><i></i></div>
       <div class="wcount">Browse characters &middot; opens automatically in <b id="wSec">10</b>s</div>
     </div>
-    <div class="wlogo wr" style="--d:1"><div class="core"></div><img id="wLogo" alt=""></div>
+    <div class="wlogo wr" style="--d:1"><div class="core"><svg class="mono" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="mg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eceef2"/><stop offset="1" stop-color="#8fa7ff"/></linearGradient></defs><text x="50" y="64" text-anchor="middle" font-size="46" font-weight="800" font-family="Georgia,serif" fill="url(#mg2)">ON</text></svg></div><img id="wLogo" alt=""></div>
     <div class="wk wr" style="--d:1">Welcome<span id="wName"></span></div>
     <h1 class="wh wr" style="--d:2">Otaku Nexus</h1>
     <p class="wsub wr" style="--d:3">Collect, trade and show off your anime cards. Everything starts with the bot.</p>
@@ -1308,12 +1309,12 @@ function enterHub(){
 function initWelcome(){
   var u=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user;
   if(u&&u.first_name)$("#wName").textContent=", "+u.first_name;
-  var wl=$("#wLogo"),srcs=BASES.map(function(b){return b+"/logo.png"}).concat([IBB]),k=0;
+  var wl=$("#wLogo"),srcs=BASES.map(function(b){return b+"/logo.png"}),k=0;
   wl.addEventListener("load",function(){wl.classList.add("ok")});
   wl.addEventListener("error",function(){if(++k<srcs.length)wl.src=srcs[k]});
   wl.src=srcs[0];
   var wp=$("#wPaper"),wsrc=["https://i.ibb.co/8LgZ0Smr/24a45a6918cbd7a1b4f5ac98b60be756.jpg","https://i.ibb.co/B2Cgg2dj/IMG-20261120-200201.jpg"],wi=0;
-  (function load(){var im=new Image();im.onload=function(){wp.style.backgroundImage='url("'+wsrc[wi]+'")';wp.classList.add("ok")};im.onerror=function(){if(++wi<wsrc.length)load()};im.src=wsrc[wi]})();
+  (function load(){var im=new Image();im.onload=function(){if(im.naturalWidth<500||im.naturalHeight<500){im.onerror();return}wp.style.backgroundImage='url("'+wsrc[wi]+'")';wp.classList.add("ok")};im.onerror=function(){if(++wi<wsrc.length)load()};im.src=wsrc[wi]})();
   /* start the entrance animation once the intro is gone; auto-open the mini app after 10s */
   var started=false;
   var go=function(){if(started)return;started=true;requestAnimationFrame(function(){
@@ -1331,7 +1332,7 @@ function initWelcome(){
 
 function init(){
   showCached(); buildChips(); renderGrid(); setAvatar(); renderShop(); renderMines(); buildGuide(); wire(); icons(); setInterval(tick,1000); tick();
-  var logo=$("#logoImg"),srcs=BASES.map(function(b){return b+"/logo.png"}).concat([IBB]),k=0;
+  var logo=$("#logoImg"),srcs=BASES.map(function(b){return b+"/logo.png"}),k=0;
   logo.addEventListener("load",function(){logo.classList.add("ok")});
   logo.addEventListener("error",function(){if(++k<srcs.length)logo.src=srcs[k]});
   logo.src=srcs[0];

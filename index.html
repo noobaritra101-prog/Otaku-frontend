@@ -287,6 +287,85 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 
 #toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);z-index:300;max-width:min(88vw,420px);padding:11px 16px;border-radius:14px;background:var(--panel3);border:1px solid var(--line2);font-size:14px;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
 #toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* top bar fix */
+.top{gap:8px}
+.brand{font-size:clamp(15px,4.8vw,19px);overflow:hidden}
+.brand .name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bal{flex:none;white-space:nowrap;gap:6px;padding:6px 10px;font-size:13px}
+.bal small{font-size:10px;line-height:1}
+.bal span{line-height:1}
+@media(max-width:360px){.brand .mark{display:none}}
+
+/* full-screen card viewer */
+#viewer{background:#000}
+.stage{display:block;padding:0;perspective:none}
+.vcard{position:absolute;inset:0;width:100%!important;height:100%;min-width:0;max-width:none;max-height:none;border:0;border-radius:0;box-shadow:none;background:transparent;display:flex;flex-direction:column}
+.vcard .art{flex:1;min-height:0;width:100%;display:block;background:transparent}
+.vcard .art:not(:has(img)):not(:has(video)){min-height:0;display:grid;place-items:center}
+.vcard .art img,.vcard .art video{position:absolute;inset:0;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;min-height:0!important;object-fit:contain;object-position:center}
+.vbody{position:absolute;left:0;right:0;bottom:0;border-top:0;padding:80px 16px calc(18px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,transparent,rgba(0,0,0,.55) 38%,rgba(0,0,0,.92))}
+.vbody h3{font-size:24px;text-shadow:0 2px 12px rgba(0,0,0,.7)}
+
+/* premium animated guide */
+#p3:not(.live) *,#p3:not(.live) *::before,#p3:not(.live) *::after{animation-play-state:paused!important}
+#p3 .in{position:relative}
+.gaura{position:absolute;left:-30px;right:-30px;top:-20px;height:420px;pointer-events:none;overflow:hidden;z-index:0;-webkit-mask-image:linear-gradient(#000 40%,transparent);mask-image:linear-gradient(#000 40%,transparent)}
+.gaura i{position:absolute;width:260px;height:260px;border-radius:50%;filter:blur(60px);opacity:.28;animation:aur 14s ease-in-out infinite}
+.gaura i:nth-child(1){left:-40px;top:0;background:#6aa3e8}
+.gaura i:nth-child(2){right:-60px;top:60px;background:#b494f0;animation-delay:-5s}
+.gaura i:nth-child(3){left:30%;top:150px;background:#d9688f;opacity:.18;animation-delay:-9s}
+@keyframes aur{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,30px) scale(1.25)}}
+#p3 .in>*:not(.gaura){position:relative;z-index:1}
+.gh2{background:var(--silverGrad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ghero{position:relative;padding:1px;border-radius:24px;overflow:hidden;background:var(--line2);margin-bottom:22px}
+.ghero::before{content:"";position:absolute;left:50%;top:50%;width:170%;aspect-ratio:1;background:conic-gradient(from 0deg,transparent 0 55%,#8fc3f2 70%,#b494f0 82%,#efe2b2 92%,transparent);animation:spin 6s linear infinite;transform:translate(-50%,-50%)}
+.ghero::after{display:none}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.gi{position:relative;border-radius:23px;padding:26px 22px 22px;background:linear-gradient(145deg,#1b1b1f,#0b0b0c 70%);overflow:hidden}
+.gkanji{position:absolute;right:-8px;bottom:-34px;font:800 150px/1 var(--display);color:rgba(198,203,212,.07);animation:drift 8s ease-in-out infinite}
+@keyframes drift{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12px) rotate(3deg)}}
+.gtitle{margin:0 0 8px;font:800 26px/1.15 var(--display);background:linear-gradient(100deg,#8b8e97 20%,#fff 45%,#c6cbd4 55%,#8b8e97 80%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shim 4s linear infinite}
+@keyframes shim{from{background-position:130% 0}to{background-position:-130% 0}}
+.gi p{margin:0;color:var(--mute);font-size:13.5px;max-width:30ch;position:relative}
+.gpills{display:flex;gap:8px;margin-top:16px;position:relative}
+.gpills span{padding:5px 12px;border-radius:999px;border:1px solid var(--line2);background:rgba(255,255,255,.03);font:600 11.5px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--silver);animation:glow 3s ease-in-out infinite}
+.gpills span:nth-child(2){animation-delay:.6s}.gpills span:nth-child(3){animation-delay:1.2s}
+@keyframes glow{0%,100%{box-shadow:0 0 0 rgba(198,203,212,0)}50%{box-shadow:0 0 16px rgba(198,203,212,.35);border-color:var(--silver)}}
+.spark{position:absolute;width:4px;height:4px;border-radius:50%;background:#fff;box-shadow:0 0 10px 2px rgba(198,203,212,.8);animation:tw 3s ease-in-out infinite}
+.spark.s1{left:62%;top:18%}.spark.s2{left:80%;top:42%;animation-delay:-1s}.spark.s3{left:48%;top:66%;animation-delay:-2s}.spark.s4{left:90%;top:14%;animation-delay:-.5s}
+@keyframes tw{0%,100%{opacity:.1;transform:scale(.5)}50%{opacity:1;transform:scale(1.4)}}
+.rv{opacity:0;transform:translateY(26px) scale(.97);filter:blur(6px);transition:opacity .7s cubic-bezier(.2,.8,.2,1) var(--d,0s),transform .7s cubic-bezier(.2,.8,.2,1) var(--d,0s),filter .7s ease var(--d,0s)}
+.rv.on{opacity:1;transform:none;filter:none}
+.steps li{padding-bottom:22px}
+.steps li::before{transform:scaleY(0);transform-origin:top;transition:transform .9s ease calc(var(--d,0s) + .3s);background:linear-gradient(180deg,var(--silver),transparent)}
+.steps li.on::before{transform:scaleY(1)}
+.steps .ico{position:relative;background:linear-gradient(145deg,var(--panel3),var(--panel));box-shadow:0 0 18px -6px rgba(198,203,212,.5)}
+.steps .ico::after{content:"";position:absolute;inset:-1px;border-radius:50%;border:1px solid var(--silver);opacity:0;animation:ping 2.8s ease-out infinite}
+.steps li:nth-child(2) .ico::after{animation-delay:.7s}.steps li:nth-child(3) .ico::after{animation-delay:1.4s}.steps li:nth-child(4) .ico::after{animation-delay:2.1s}
+@keyframes ping{0%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(1.7)}}
+.steps .tx{flex:1;min-width:0;padding:12px 14px;border-radius:16px;background:var(--panel);border:1px solid var(--line);position:relative;overflow:hidden}
+.steps .tx::after{content:"";position:absolute;top:0;bottom:0;width:60px;left:-80px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.06),transparent);animation:sweep 5s ease-in-out infinite}
+@keyframes sweep{0%,60%{transform:translateX(0)}100%{transform:translateX(520px)}}
+.steps .num{position:absolute;right:12px;top:8px;font:500 11px var(--mono);font-style:normal;color:var(--mute);letter-spacing:.1em}
+.lab::after{content:"";flex:1;height:1px;margin-left:6px;background:linear-gradient(90deg,var(--line2),transparent);transform:scaleX(0);transform-origin:left;transition:transform 1s ease .3s}
+.lab.on::after{transform:scaleX(1)}
+.rgrid .rcell{position:relative;overflow:hidden;border-color:color-mix(in srgb,var(--rc) 40%,transparent);background:linear-gradient(145deg,color-mix(in srgb,var(--rc) 14%,var(--panel)),var(--panel))}
+.rgrid .rcell::after{content:"";position:absolute;top:0;bottom:0;width:40px;left:-60px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.12),transparent);animation:sweep2 4.5s ease-in-out infinite;animation-delay:calc(var(--i,0)*.35s)}
+@keyframes sweep2{0%,55%{transform:translateX(0)}100%{transform:translateX(240px)}}
+.rgrid .rcell .em{animation:bob 3s ease-in-out infinite;animation-delay:calc(var(--i,0)*.25s)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px) scale(1.12)}}
+.marqwrap{display:grid;gap:10px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.marq{overflow:hidden}
+.mtrack{display:flex;gap:8px;width:max-content;animation:marq 38s linear infinite}
+.marq.rev .mtrack{animation-direction:reverse;animation-duration:44s}
+@keyframes marq{to{transform:translateX(-50%)}}
+.mchip{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;border:1px solid var(--line2);background:var(--panel);font-size:13px;font-weight:600;white-space:nowrap}
+.mchip .em{font-size:17px}
+.crow{transition:opacity .7s cubic-bezier(.2,.8,.2,1) var(--d,0s),transform .7s cubic-bezier(.2,.8,.2,1) var(--d,0s),filter .7s ease var(--d,0s),background .2s}
+.crow code{padding:3px 9px;border-radius:8px;background:var(--bg);border:1px solid var(--line2);min-width:0;white-space:nowrap}
+.crow:active{background:rgba(198,203,212,.06)}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1!important;transform:none!important;filter:none!important}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -307,7 +386,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 
 <div id="app">
   <header class="top" id="top">
-    <div class="brand"><span class="mark"><i data-lucide="sparkles"></i></span>Otaku Nexus</div>
+    <div class="brand"><span class="mark"><i data-lucide="sparkles"></i></span><span class="name">Otaku Nexus</span></div>
     <div class="bal" id="balBox" hidden><small>NEX</small><span id="bal">0</span></div>
     <div class="avatar" id="avatar" hidden></div>
     <button class="menubtn" type="button" id="menuBtn" aria-label="Menu"><i data-lucide="menu"></i></button>
@@ -344,30 +423,37 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
     </div></section>
 
     <section class="page" id="p3" aria-label="Guide"><div class="in">
-      <h2>Guide</h2>
+      <div class="gaura" aria-hidden="true"><i></i><i></i><i></i></div>
+      <h2 class="gh2">Guide</h2>
       <p class="sub">Start in two minutes.</p>
-      <div class="ghero"><h3>Collect. Bind. Trade.</h3><p>Characters drop in your group chats. Be first to bind one and it is yours.</p></div>
+      <div class="ghero rv"><div class="gi">
+        <span class="gkanji" aria-hidden="true">星</span>
+        <span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span><span class="spark s4"></span>
+        <h3 class="gtitle">Collect. Bind. Trade.</h3>
+        <p>Characters drop in your group chats. Be first to bind one and it is yours.</p>
+        <div class="gpills"><span>Drops</span><span>Bind</span><span>Nex</span></div>
+      </div></div>
       <ol class="steps">
-        <li><span class="ico"><i data-lucide="user-plus"></i></span><div class="tx"><b>Add the bot to your group</b><p>Open the bot, press Add Me and make it an admin so it can see messages.</p></div></li>
-        <li><span class="ico"><i data-lucide="message-circle"></i></span><div class="tx"><b>Chat normally</b><p>A character drops every <span id="dMin">110</span> to <span id="dMax">500</span> messages, set by group admins with /setdrop.</p></div></li>
-        <li><span class="ico"><i data-lucide="hand"></i></span><div class="tx"><b>Bind it first</b><p>Type /bind and the character's name. The first correct name keeps the card.</p></div></li>
-        <li><span class="ico"><i data-lucide="coins"></i></span><div class="tx"><b>Earn Nex and spend it</b><p>Claim /daily, play /slot and /whoami, play Mines here, then buy cards in the Shop.</p></div></li>
+        <li class="rv"><span class="ico"><i data-lucide="user-plus"></i></span><div class="tx"><em class="num">01</em><b>Add the bot to your group</b><p>Open the bot, press Add Me and make it an admin so it can see messages.</p></div></li>
+        <li class="rv"><span class="ico"><i data-lucide="message-circle"></i></span><div class="tx"><em class="num">02</em><b>Chat normally</b><p>A character drops every <span id="dMin">110</span> to <span id="dMax">500</span> messages, set by group admins with /setdrop.</p></div></li>
+        <li class="rv"><span class="ico"><i data-lucide="hand"></i></span><div class="tx"><em class="num">03</em><b>Bind it first</b><p>Type /bind and the character's name. The first correct name keeps the card.</p></div></li>
+        <li class="rv"><span class="ico"><i data-lucide="coins"></i></span><div class="tx"><em class="num">04</em><b>Earn Nex and spend it</b><p>Claim /daily, play /slot and /whoami, play Mines here, then buy cards in the Shop.</p></div></li>
       </ol>
-      <div class="lab"><i data-lucide="gem"></i>Rarities</div>
+      <div class="lab rv"><i data-lucide="gem"></i>Rarities</div>
       <div class="rgrid" id="rarGrid"></div>
-      <div class="lab"><i data-lucide="wand-sparkles"></i>Sub rarities</div>
-      <div class="rgrid s2" id="subGrid"></div>
-      <div class="lab"><i data-lucide="terminal"></i>Useful commands</div>
+      <div class="lab rv"><i data-lucide="wand-sparkles"></i>Sub rarities</div>
+      <div class="marqwrap" id="subGrid"></div>
+      <div class="lab rv"><i data-lucide="terminal"></i>Useful commands</div>
       <div class="cmdlist">
-        <div class="crow"><code>/daily</code><span>Claim your daily Nex</span></div>
-        <div class="crow"><code>/mynex</code><span>Check your balance</span></div>
-        <div class="crow"><code>/shop</code><span>See today's cards</span></div>
-        <div class="crow"><code>/harem</code><span>Browse your collection</span></div>
-        <div class="crow"><code>/search rem</code><span>Find a character by name or ID</span></div>
-        <div class="crow"><code>/waifuverse</code><span>Explore every character</span></div>
-        <div class="crow"><code>/topplayers</code><span>Leaderboard</span></div>
-        <div class="crow"><code>/rarity</code><span>Rarity list and odds</span></div>
-        <div class="crow"><code>/oweb</code><span>Open this app</span></div>
+        <div class="crow rv"><code>/daily</code><span>Claim your daily Nex</span></div>
+        <div class="crow rv"><code>/mynex</code><span>Check your balance</span></div>
+        <div class="crow rv"><code>/shop</code><span>See today's cards</span></div>
+        <div class="crow rv"><code>/harem</code><span>Browse your collection</span></div>
+        <div class="crow rv"><code>/search rem</code><span>Find a character by name or ID</span></div>
+        <div class="crow rv"><code>/waifuverse</code><span>Explore every character</span></div>
+        <div class="crow rv"><code>/topplayers</code><span>Leaderboard</span></div>
+        <div class="crow rv"><code>/rarity</code><span>Rarity list and odds</span></div>
+        <div class="crow rv"><code>/oweb</code><span>Open this app</span></div>
       </div>
     </div></section>
   </main>
@@ -434,7 +520,7 @@ function rk(r){return (r||"common").toLowerCase()}
 function hue(id){return (id*47)%360}
 var GLYPHS="星月桜空夜花風雨光雪炎夢";
 /* size the picture/video in the box to its own ratio so there are no bars at the sides */
-function nxFit(el){
+function nxFit(el){return;
   var box=$("#vcard"); if(!box||!el||!box.contains(el))return;
   var nw=el.naturalWidth||el.videoWidth, nh=el.naturalHeight||el.videoHeight; if(!nw||!nh)return;
   var maxW=Math.min(window.innerWidth-28,430), maxH=Math.max(200,window.innerHeight-330), k=Math.min(maxW/nw,maxH/nh),
@@ -614,7 +700,7 @@ function viewerRender(dir){
   $("#vcount").textContent=(V.i+1)+" / "+V.list.length;
   var info='<div class="vbody"><h3>'+esc(c.name)+'</h3><div class="vmeta"><span>'+esc(c.series)+'</span></div>'+
     '<div class="vmeta">'+rTag(c.rarity)+subTag(c.sub)+'<span class="tag">ID '+c.id+'</span>'+(c.qty?'<span class="tag">x'+c.qty+' owned</span>':'')+'</div>'+
-    (V.list.length>1?'<div class="hint">Swipe to browse · tap outside to close</div>':'<div class="hint">Tap outside to close</div>')+'</div>';
+    (V.list.length>1?'<div class="hint">Swipe to browse · swipe down to close</div>':'<div class="hint">Swipe down to close</div>')+'</div>';
   el.innerHTML=artHtml(c,true)+info;
   icons();
   [V.i-1,V.i+1].forEach(function(j){var n=V.list[j];if(n&&n.m==="p"){var im=new Image();im.src=imgUrl(n.id)}});
@@ -833,8 +919,17 @@ function minesInput(e){
 
 /* ───── guide ───── */
 function buildGuide(){
-  $("#rarGrid").innerHTML=RARITIES.map(function(r){return '<div class="rcell"><i class="em">'+RE[r]+'</i><span>'+r+'</span></div>'}).join("");
-  $("#subGrid").innerHTML=SUBS.map(function(s){return '<div class="rcell"><i class="em">'+s[1]+'</i><span>'+s[0]+'</span></div>'}).join("");
+  $("#rarGrid").innerHTML=RARITIES.map(function(r,i){return '<div class="rcell rv" style="--rc:var(--c-'+rk(r)+');--i:'+i+'"><i class="em">'+RE[r]+'</i><span>'+r+'</span></div>'}).join("");
+  var row=function(a,rev){var h=a.map(function(x){return '<span class="mchip"><i class="em">'+x[1]+'</i>'+x[0]+'</span>'}).join("");return '<div class="marq rv'+(rev?' rev':'')+'"><div class="mtrack">'+h+h+'</div></div>'};
+  var half=Math.ceil(SUBS.length/2);
+  $("#subGrid").innerHTML=row(SUBS.slice(0,half),false)+row(SUBS.slice(half),true);
+  ["#rarGrid",".steps",".cmdlist","#subGrid"].forEach(function(sel){$$(".rv",$(sel)).forEach(function(el,i){el.style.setProperty("--d",Math.min(i,9)*70+"ms")})});
+  $("#p3").addEventListener("scroll",guideReveal,{passive:true});
+}
+function guideReveal(){
+  var p=$("#p3"); if(!p.classList.contains("live"))return;
+  var lim=p.getBoundingClientRect().top+p.clientHeight*0.98;
+  $$(".rv:not(.on)",p).forEach(function(el){if(el.getBoundingClientRect().top<lim)el.classList.add("on")});
 }
 
 /* ───── pager ───── */
@@ -844,6 +939,7 @@ function setTab(i,fromScroll){
   tabs.forEach(function(b,j){b.setAttribute("aria-selected",String(j===i))});
   if(i===1&&!shop.loaded)loadShop(); if(i===1&&shop.loaded&&Date.now()-shop.at>60000)loadShop();
   if(i===2)loadMinesState();
+  if(i===3){$("#p3").classList.add("live");guideReveal()}
 }
 pager.addEventListener("scroll",function(){var i=Math.round(pager.scrollLeft/Math.max(1,pager.clientWidth));if(i!==curTab)setTab(i,true)},{passive:true});
 tabs.forEach(function(b){b.addEventListener("click",function(){var i=Number(b.getAttribute("data-i"));pager.scrollTo({left:i*pager.clientWidth,behavior:"smooth"});haptic("light")})});

@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://sad.adsgram.ai/js/sad.min.js" async></script>
 <style>
 /* Matte black + silver. Phone-first shell: top bar, swipe pager (Collection, Shop, Games, Guide), bottom dock, full-screen viewer and sheets. */
 :root{
@@ -88,38 +89,41 @@ h2{font:800 26px/1.15 var(--display);margin:0 0 4px}
 .shead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 2px 10px;margin-bottom:12px;border-bottom:1px solid var(--line)}
 .shead h3{margin:0;font:800 18px/1.2 var(--display);overflow-wrap:anywhere;color:var(--silver2)}
 .shead span{flex:none;font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
-.sgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-@media(min-width:520px){.sgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.sgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media(min-width:520px){.sgrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}}
+@media(min-width:760px){.sgrid{grid-template-columns:repeat(5,minmax(0,1fr))}}
 .empty{padding:40px 16px;text-align:center;color:var(--mute);border:1px dashed var(--line2);border-radius:16px;margin-top:16px}
-.card{position:relative;display:block;width:100%;text-align:left;border-radius:16px;overflow:hidden;background:var(--panel);border:1px solid var(--line);--rc:var(--c-common);transition:transform .2s,border-color .2s}
+.card{position:relative;display:block;width:100%;text-align:left;border-radius:12px;overflow:hidden;background:var(--panel);border:1px solid var(--line);--rc:var(--c-common);transition:transform .2s,border-color .2s}
 .card:active{transform:scale(.97)}
 .art{position:relative;aspect-ratio:3/4;display:grid;place-items:center;overflow:hidden;background:radial-gradient(90% 70% at 50% 25%,hsl(var(--h) 14% 24%),hsl(var(--h) 10% 11%) 65%,#09090a)}
-.art img,.art video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.glyph{font:800 72px/1 var(--display);color:rgba(255,255,255,.55);mix-blend-mode:screen}
-.card .art::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35) 0,transparent 28%,transparent 52%,rgba(8,8,9,.94) 100%)}
+.art img,.art video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%}
+.glyph{font:800 44px/1 var(--display);color:rgba(255,255,255,.55);mix-blend-mode:screen}
+.card .art::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.18) 0,transparent 24%,transparent 62%,rgba(8,8,9,.92) 100%)}
 .card::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--rc);opacity:.9;z-index:3}
-.badge{position:absolute;left:8px;top:8px;z-index:2;display:inline-flex;gap:6px;align-items:center;padding:3px 9px 3px 7px;border-radius:999px;background:rgba(8,8,9,.72);backdrop-filter:blur(6px);border:1px solid var(--line2);font-size:11px;font-weight:600}
-.qty{position:absolute;right:8px;top:8px;z-index:2;padding:2px 8px;border-radius:999px;background:rgba(8,8,9,.72);font:500 11px var(--mono);color:var(--silver)}
-.play{position:absolute;right:8px;bottom:56px;z-index:2;width:26px;height:26px;border-radius:50%;background:rgba(8,8,9,.72);display:grid;place-items:center;color:var(--silver)}
-.cap{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:10px 12px 12px}
-.cap b{display:block;font:700 15px/1.2 var(--display);overflow-wrap:anywhere}
-.cap span{display:block;font-size:11.5px;color:var(--silver);opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{position:absolute;left:5px;top:5px;z-index:2;display:inline-flex;gap:4px;align-items:center;padding:2px 6px;border-radius:999px;background:rgba(8,8,9,.72);backdrop-filter:blur(6px);border:1px solid var(--line2);font-size:11px;font-weight:600}
+.qty{position:absolute;right:5px;top:5px;z-index:2;padding:2px 6px;border-radius:999px;background:rgba(8,8,9,.72);font:500 10px var(--mono);color:var(--silver)}
+.play{position:absolute;right:5px;bottom:40px;z-index:2;width:22px;height:22px;border-radius:50%;background:rgba(8,8,9,.72);display:grid;place-items:center;color:var(--silver)}
+.cap{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:8px 8px 9px}
+.cap b{display:block;font:700 12px/1.2 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cap span{display:block;font-size:10px;color:var(--silver);opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .more{height:1px}
 
-/* ───── full view ───── */
-#viewer{position:fixed;inset:0;z-index:120;background:#000;touch-action:none;overflow:hidden}
-#vbg{position:absolute;inset:-30px;background-size:cover;background-position:center;filter:blur(40px) brightness(.4) saturate(1.1);transform:scale(1.1)}
+/* ───── card box (tap a card: full picture in a centered box) ───── */
+#viewer{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.6);touch-action:none;overflow:hidden}
+#vbg{position:absolute;inset:-30px;background-size:cover;background-position:center;filter:blur(36px) brightness(.38) saturate(1.1);transform:scale(1.1)}
 .vtop{position:absolute;z-index:4;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 8px}
 .vtop .count{font:500 13px var(--mono);color:var(--silver);padding:6px 12px;border-radius:999px;background:rgba(8,8,9,.6);border:1px solid var(--line2)}
 .round{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(8,8,9,.6);border:1px solid var(--line2);backdrop-filter:blur(8px)}
-.stage{position:absolute;inset:0;z-index:1;perspective:1100px}
-.vcard{position:absolute;inset:0;--rc:var(--c-common);transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .28s;will-change:transform}
+.stage{position:absolute;inset:0;z-index:1;display:grid;place-items:center;perspective:1100px;padding:calc(62px + env(safe-area-inset-top,0px)) 14px calc(20px + env(safe-area-inset-bottom,0px))}
+.vcard{position:relative;width:min(100%,430px);max-height:100%;overflow:hidden;--rc:var(--c-common);background:var(--panel);border:1px solid color-mix(in srgb,var(--rc) 55%,transparent);border-radius:24px;box-shadow:0 30px 80px -20px rgba(0,0,0,.85),0 0 40px -18px var(--rc);transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .28s;will-change:transform}
 .vcard.drag{transition:none}
-.vcard .art{position:absolute;inset:0;aspect-ratio:auto;height:100%;background:transparent}
-.vcard .art img,.vcard .art video{object-fit:contain}
-.vcard .glyph{font-size:140px}
-.vinfo{position:absolute;z-index:3;left:0;right:0;bottom:0;padding:70px 20px calc(18px + env(safe-area-inset-bottom,0px));display:grid;gap:10px;justify-items:center;text-align:center;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(0,0,0,.78) 55%,rgba(0,0,0,.92))}
-.vinfo h3{font:800 26px/1.15 var(--display);margin:0;overflow-wrap:anywhere}
+.vcard .art{position:relative;aspect-ratio:auto;height:auto;background:#050506;display:block}
+.vcard .art:not(:has(img)):not(:has(video)){min-height:300px;display:grid;place-items:center;background:radial-gradient(90% 70% at 50% 25%,hsl(var(--h) 14% 24%),hsl(var(--h) 10% 11%) 65%,#09090a)}
+.vcard .art:has(img) .glyph,.vcard .art:has(video) .glyph{display:none}
+.vcard .art img,.vcard .art video{position:relative;inset:auto;display:block;width:100%;height:auto;max-height:calc(100vh - 290px);max-height:calc(100dvh - 290px);min-height:200px;object-fit:contain;object-position:center;image-rendering:auto;-webkit-user-drag:none;user-select:none}
+.vcard .glyph{font-size:120px}
+.vbody{display:grid;gap:9px;justify-items:center;text-align:center;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px)*0);pointer-events:none;border-top:1px solid var(--line)}
+.vbody h3{font:800 21px/1.15 var(--display);margin:0;overflow-wrap:anywhere}
 .vmeta{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;color:var(--silver);font-size:13.5px}
 .tag{display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:999px;border:1px solid var(--line2);background:rgba(8,8,9,.6);font-weight:600;font-size:12.5px;white-space:nowrap}
 .tag.r{border-color:color-mix(in srgb,var(--rc) 60%,transparent)}
@@ -335,7 +339,6 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
   <div class="vtop"><span class="round" style="visibility:hidden"></span><span class="count" id="vcount"></span><button class="round" type="button" id="vclose" aria-label="Close"><i data-lucide="x"></i></button></div>
   <button class="vnav l round" type="button" id="vprev" aria-label="Previous"><i data-lucide="chevron-left"></i></button>
   <button class="vnav r round" type="button" id="vnext" aria-label="Next"><i data-lucide="chevron-right"></i></button>
-  <div class="vinfo" id="vinfo"></div>
 </div>
 
 <div id="sheetbg" hidden><div id="sheet" role="dialog" aria-modal="true"></div></div>
@@ -398,7 +401,7 @@ function artHtml(c,big){
 }
 function cardHtml(c,i){
   return '<button class="card" type="button" data-i="'+i+'" style="--rc:var(--c-'+rk(c.rarity)+')">'+artHtml(c)+
-   '<span class="badge"><i class="em">'+(RE[c.rarity]||"")+'</i>'+esc(c.rarity)+'</span>'+(c.qty>1?'<span class="qty">x'+c.qty+'</span>':'')+
+   '<span class="badge" title="'+esc(c.rarity)+'"><i class="em">'+(RE[c.rarity]||"")+'</i></span>'+(c.qty>1?'<span class="qty">x'+c.qty+'</span>':'')+
    (c.m!=="p"?'<span class="play"><i data-lucide="play"></i></span>':'')+
    '<span class="cap"><b>'+esc(c.name)+'</b><span>'+(c.sub?subEmoji(c.sub)+" "+esc(subName(c.sub)):esc(c.rarity))+'</span></span></button>';
 }
@@ -461,30 +464,45 @@ function loadMine(){
   .catch(function(){$("#colSub").textContent="Could not reach the bot";$("#grid").innerHTML='<div class="empty">Could not load your collection.<br><button class="btn" data-retry type="button" style="margin-top:12px">Try again</button></div>'});
 }
 
+/* ───── Adsgram interstitial (block int-60824) ───── */
+var ADS={block:"int-60824",ctl:null,opens:0,last:0,busy:false,every:5,gap:90000};
+function adCtl(){
+  if(ADS.ctl)return ADS.ctl;
+  try{if(window.Adsgram&&INIT){ADS.ctl=window.Adsgram.init({blockId:ADS.block})}}catch(e){}
+  return ADS.ctl;
+}
+function maybeAd(){
+  /* every 5th card opened, at most one ad per 90s; any failure is ignored so the app never blocks */
+  ADS.opens++;
+  if(ADS.busy||ADS.opens%ADS.every!==0||Date.now()-ADS.last<ADS.gap)return;
+  var c=adCtl(); if(!c)return;
+  ADS.busy=true;
+  c.show().then(function(){ADS.last=Date.now();ADS.busy=false},function(){ADS.last=Date.now();ADS.busy=false});
+}
+
 /* ───── full view: swipe left/right for the next card, down to close ───── */
 var V={list:[],i:0,open:false};
 function viewerRender(dir){
   var c=V.list[V.i]; if(!c)return;
   var k=rk(c.rarity), el=$("#vcard");
   el.style.setProperty("--rc","var(--c-"+k+")");
-  el.innerHTML=artHtml(c,true);
   $("#vbg").style.backgroundImage=c.m==="p"?'url("'+imgUrl(c.id)+'")':"none";
   $("#vcount").textContent=(V.i+1)+" / "+V.list.length;
-  var vi=$("#vinfo"); vi.style.setProperty("--rc","var(--c-"+k+")");
-  vi.innerHTML='<h3>'+esc(c.name)+'</h3><div class="vmeta"><span>'+esc(c.series)+'</span></div>'+
+  var info='<div class="vbody"><h3>'+esc(c.name)+'</h3><div class="vmeta"><span>'+esc(c.series)+'</span></div>'+
     '<div class="vmeta">'+rTag(c.rarity)+subTag(c.sub)+'<span class="tag">ID '+c.id+'</span>'+(c.qty?'<span class="tag">x'+c.qty+' owned</span>':'')+'</div>'+
-    (V.list.length>1?'<div class="hint">Swipe to browse</div>':'');
+    (V.list.length>1?'<div class="hint">Swipe to browse · tap outside to close</div>':'<div class="hint">Tap outside to close</div>')+'</div>';
+  el.innerHTML=artHtml(c,true)+info;
   icons();
   [V.i-1,V.i+1].forEach(function(j){var n=V.list[j];if(n&&n.m==="p"){var im=new Image();im.src=imgUrl(n.id)}});
   if(dir){el.style.transition="none";el.style.opacity="0";el.style.transform="translateX("+(dir*60)+"px)";
     requestAnimationFrame(function(){requestAnimationFrame(function(){el.style.transition="";el.style.opacity="1";el.style.transform=""})})}
 }
-function openViewer(l,i){V.list=l;V.i=i;V.open=true;$("#viewer").hidden=false;viewerRender(0);haptic("light");history.pushState&&history.pushState({v:1},"")}
+function openViewer(l,i){V.list=l;V.i=i;V.open=true;$("#viewer").hidden=false;viewerRender(0);haptic("light");maybeAd();history.pushState&&history.pushState({v:1},"")}
 function closeViewer(fromPop){if(!V.open)return;V.open=false;$("#viewer").hidden=true;$$("video",$("#vcard")).forEach(function(v){v.pause()});if(!fromPop&&history.state&&history.state.v)history.back()}
 function step(d){var n=V.i+d;if(n<0||n>=V.list.length){var el=$("#vcard");el.style.transform="translateX("+(-d*18)+"px)";setTimeout(function(){el.style.transform=""},160);return}V.i=n;haptic("light");viewerRender(d)}
 (function swipe(){
-  var sg=$("#stage"), x0=0,y0=0,dx=0,dy=0,on=false,axis="";
-  sg.addEventListener("pointerdown",function(e){on=true;x0=e.clientX;y0=e.clientY;dx=dy=0;axis="";$("#vcard").classList.add("drag");try{sg.setPointerCapture(e.pointerId)}catch(_){}});
+  var sg=$("#stage"), x0=0,y0=0,dx=0,dy=0,on=false,axis="",outside=false;
+  sg.addEventListener("pointerdown",function(e){on=true;x0=e.clientX;y0=e.clientY;dx=dy=0;axis="";var r=$("#vcard").getBoundingClientRect();outside=e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom;$("#vcard").classList.add("drag");try{sg.setPointerCapture(e.pointerId)}catch(_){}});
   sg.addEventListener("pointermove",function(e){
     if(!on)return; dx=e.clientX-x0; dy=e.clientY-y0;
     if(!axis&&(Math.abs(dx)>8||Math.abs(dy)>8))axis=Math.abs(dx)>Math.abs(dy)?"x":"y";
@@ -496,6 +514,7 @@ function step(d){var n=V.i+d;if(n<0||n>=V.list.length){var el=$("#vcard");el.sty
     if(!on)return; on=false; var el=$("#vcard"); el.classList.remove("drag"); el.style.transform="";
     if(axis==="x"&&Math.abs(dx)>60)step(dx<0?1:-1);
     else if(axis==="y"&&dy>110)closeViewer();
+    else if(!axis&&outside)closeViewer();
   }
   sg.addEventListener("pointerup",end); sg.addEventListener("pointercancel",end);
 })();

@@ -639,6 +639,21 @@ input[type=range]::-webkit-slider-thumb,input[type=range]::-moz-range-thumb{back
 #welcome.go .wbar i{animation:wfill 10s linear forwards}
 @keyframes wfill{to{transform:scaleX(1)}}
 .core .mono{position:absolute;inset:18%;width:64%;height:64%}
+
+/* reward ads card (Shop page) */
+.adbox{margin:0 0 16px}
+.adcard{border:1px solid var(--line2);border-radius:20px;padding:16px;background:linear-gradient(160deg,var(--panel2),var(--panel));display:grid;gap:12px}
+.adcard .hd{display:flex;gap:12px;align-items:center}
+.adcard .hd .ic{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:var(--silverGrad);color:var(--on);flex:none}
+.adcard .hd .ic svg{width:22px;height:22px}
+.adcard h4{margin:0;font:800 17px/1.2 var(--display)}
+.adcard .hd small{display:block;color:var(--mute);font-size:12.5px;margin-top:3px}
+.adodds{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.adodds div{border:1px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;background:var(--panel);box-shadow:inset 0 -2px 0 var(--rc)}
+.adodds i{font-style:normal;font-size:20px;display:block}
+.adodds span{display:block;font-size:12px;color:var(--mute);margin-top:2px}
+.adodds b{display:block;font:600 15px var(--mono);margin-top:3px}
+.adcard .foot{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--mute);font-size:12.5px}
 </style>
 </head>
 <body>
@@ -709,6 +724,7 @@ input[type=range]::-webkit-slider-thumb,input[type=range]::-moz-range-thumb{back
       <h2>Shop</h2>
       <p class="sub">Your own random cards, every day. Each can be bought once.</p>
       <div class="timer"><i data-lucide="clock"></i>Resets in <b id="reset">--:--:--</b></div>
+      <div class="adbox" id="adBox"></div>
       <div id="shopBody"></div>
     </div></section>
 
@@ -1118,6 +1134,48 @@ function buy(i){
   }).catch(function(e){haptic("err");closeSheet();toast(e.message)});
 }
 
+
+/* ───── reward ads: watch 2 ads, get a random card (Adsgram block int-61157) ───── */
+var RW={block:"int-61157",ctl:null,left:null,cap:0,need:2,chances:[],busy:false};
+function rwCtl(){
+  if(RW.ctl)return RW.ctl;
+  try{if(window.Adsgram&&INIT){RW.ctl=window.Adsgram.init({blockId:RW.block})}}catch(e){}
+  return RW.ctl;
+}
+function renderRw(step){
+  var b=$("#adBox"); if(!b)return;
+  if(!INIT||RW.left===null){b.innerHTML="";return}
+  var odds=RW.chances.map(function(x){return '<div style="--rc:var(--c-'+rk(x[0])+')"><i>'+(RE[x[0]]||"")+'</i><span>'+esc(x[0])+'</span><b>'+x[1]+'%</b></div>'}).join("");
+  var out=RW.left<=0, label=step?esc(step):(out?"Come back tomorrow":'<i data-lucide="play"></i>Watch '+RW.need+' ads');
+  b.innerHTML='<div class="adcard"><div class="hd"><span class="ic"><i data-lucide="gift"></i></span><div><h4>Free card</h4><small>Watch '+RW.need+' ads for a random card</small></div></div>'+
+    '<div class="adodds">'+odds+'</div>'+
+    '<button class="btn pri wide" type="button" data-adwatch'+(out||RW.busy?" disabled":"")+'>'+label+'</button>'+
+    '<div class="foot"><span>'+RW.left+' of '+RW.cap+' left today</span><span>Added to your collection</span></div></div>';
+  icons();
+}
+function loadRw(){
+  if(!INIT)return;
+  api("/api/adreward").then(function(r){RW.left=r.left;RW.cap=r.cap;RW.need=r.need;RW.chances=r.chances;renderRw()}).catch(function(){});
+}
+function rwWatch(){
+  if(RW.busy||!RW.left)return;
+  var c=rwCtl(); if(!c){toast("Ads are not ready yet. Try again in a moment.");return}
+  var tok="", wait=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
+  RW.busy=true; renderRw("Starting...");
+  api("/api/adreward/start",{}).then(function(r){tok=r.token;var p=Promise.resolve();
+    for(var n=1;n<=RW.need;n++)(function(n){p=p.then(function(){renderRw("Ad "+n+" of "+RW.need);return c.show()}).then(function(){return n<RW.need?wait(500):0})})(n);
+    return p;
+  }).then(function(){
+    renderRw("Opening your reward...");
+    return api("/api/adreward/claim",{token:tok});
+  }).then(function(r){
+    var c2=r.card; RW.left=r.left; haptic("ok"); loadMine();
+    openSheet('<div class="done"><div class="tick"><i data-lucide="gift"></i></div><h3>You got a '+esc(c2.rarity)+' card</h3><div class="sprev" style="--rc:var(--c-'+rk(c2.rarity)+')">'+artHtml(c2)+'<div class="t"><b>'+esc(c2.name)+'</b><span>'+esc(c2.series)+'</span><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">'+rTag(c2.rarity)+subTag(c2.sub)+'</div></div></div><span class="sub">Added to your collection.</span></div><button class="btn pri wide" type="button" data-close>Nice</button>');
+  }).catch(function(e){
+    haptic("err"); toast(e&&e.message?e.message:"The ads were not completed. Try again.");
+  }).then(function(){RW.busy=false;loadRw()});
+}
+
 /* ───── mines ───── */
 var G={bet:100,mines:3,game:null,over:null,busy:false,minCash:3,rtp:.97,min:10,max:50000};
 var SVG={
@@ -1269,6 +1327,7 @@ function wire(){
   new IntersectionObserver(function(en){if(en[0].isIntersecting)moreCards()},{root:$("#p0"),rootMargin:"600px"}).observe($("#more"));
   $("#vclose").addEventListener("click",function(){closeViewer()});
   $("#vprev").addEventListener("click",function(){step(-1)}); $("#vnext").addEventListener("click",function(){step(1)});
+  $("#adBox").addEventListener("click",function(e){if(e.target.closest("[data-adwatch]"))rwWatch()});
   $("#shopBody").addEventListener("click",function(e){
     if(e.target.closest("[data-shopretry]"))return loadShop();
     var v=e.target.closest(".art-btn[data-view]");if(v){openViewer(shop.items.map(function(c){return {id:c.id,name:c.name,series:c.series,rarity:c.rarity,sub:c.sub,qty:0,m:c.m}}),Number(v.getAttribute("data-view")));return}
@@ -1346,7 +1405,7 @@ function init(){
       $("#dMin").textContent=o.drop.min; $("#dMax").textContent=o.drop.max; renderShop(); renderMines(); tick();
     }).catch(function(){});
     loadMine();
-    if(INIT){api("/api/me").then(function(m){setBal(m.nex)}).catch(function(){}); loadShop(); loadMinesState()}
+    if(INIT){api("/api/me").then(function(m){setBal(m.nex)}).catch(function(){}); loadShop(); loadRw(); loadMinesState()}
   });
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();

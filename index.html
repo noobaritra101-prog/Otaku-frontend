@@ -648,12 +648,94 @@ input[type=range]::-webkit-slider-thumb,input[type=range]::-moz-range-thumb{back
 .adcard .hd .ic svg{width:22px;height:22px}
 .adcard h4{margin:0;font:800 17px/1.2 var(--display)}
 .adcard .hd small{display:block;color:var(--mute);font-size:12.5px;margin-top:3px}
-.adodds{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.adodds div{border:1px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;background:var(--panel);box-shadow:inset 0 -2px 0 var(--rc)}
-.adodds i{font-style:normal;font-size:20px;display:block}
-.adodds span{display:block;font-size:12px;color:var(--mute);margin-top:2px}
-.adodds b{display:block;font:600 15px var(--mono);margin-top:3px}
+.adcard{position:relative;animation:adin .5s cubic-bezier(.2,.8,.2,1) both;transition:border-color .3s,box-shadow .3s}
+.adcard.busy{border-color:rgba(168,177,255,.55);animation:adin .5s both,adglow 1.6s ease-in-out infinite}
+.adcard .hd .ic{animation:adfloat 3.2s ease-in-out infinite}
+.adcard.busy .hd .ic{animation:adspin 1.4s linear infinite}
+.adbar{display:flex;gap:8px}
+.adbar .seg{flex:1;height:10px;border-radius:999px;background:var(--panel3);border:1px solid var(--line);overflow:hidden;position:relative}
+.adbar .seg b{position:absolute;inset:0;width:0;border-radius:inherit;background:var(--silverGrad);transition:width .55s cubic-bezier(.2,.8,.2,1)}
+.adbar .seg.on b{width:100%}
+.adbar .seg.act b{width:100%;background:repeating-linear-gradient(115deg,#8cafff 0 10px,#b4a2ff 10px 20px);background-size:40px 100%;animation:adstripe .9s linear infinite,adpulse 1.2s ease-in-out infinite}
+.adbar .seg.on::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transform:translateX(-100%);animation:adsweep 1.1s .1s ease-out 1}
+.adcard .foot b{font-weight:700;color:var(--fg)}
+.adcard [data-adwatch]{position:relative;overflow:hidden}
+.adcard [data-adwatch]:not(:disabled)::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-50%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);animation:adshine 3.2s ease-in-out infinite}
+@keyframes adin{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes adfloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(-6deg)}}
+@keyframes adspin{to{transform:rotate(360deg)}}
+@keyframes adglow{0%,100%{box-shadow:0 0 0 0 rgba(140,175,255,0)}50%{box-shadow:0 0 22px 2px rgba(140,175,255,.28)}}
+@keyframes adstripe{to{background-position:40px 0}}
+@keyframes adpulse{0%,100%{opacity:.75}50%{opacity:1}}
+@keyframes adsweep{to{transform:translateX(100%)}}
+@keyframes adshine{0%,55%{left:-50%}100%{left:130%}}
+@media(prefers-reduced-motion:reduce){.adcard,.adcard *,.adcard::after{animation:none!important;transition:none!important}}
 .adcard .foot{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--mute);font-size:12.5px}
+
+/* ───── premium reveal: box opens, light burst, card flips ───── */
+#reveal{position:fixed;inset:0;z-index:160;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;--rc:var(--c-common);background:#03030a;animation:rvfade .35s ease both}
+#reveal.out{animation:rvout .35s ease forwards}
+#reveal .rv-bg{position:absolute;inset:0;background:radial-gradient(70% 55% at 50% 42%,color-mix(in srgb,var(--rc) 38%,transparent),transparent 70%),radial-gradient(120% 90% at 50% 120%,#1a1f3d,#03030a 70%);opacity:.55;transition:opacity .8s}
+#reveal.s2 .rv-bg{opacity:1}
+#reveal .rv-stage{position:relative;width:100%;height:min(54vh,430px);flex:none}
+#reveal .rv-rays{position:absolute;left:50%;top:50%;width:980px;height:980px;margin:-490px 0 0 -490px;pointer-events:none;opacity:0;transition:opacity .9s;
+  background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--rc) 42%,transparent) 0 5deg,transparent 5deg 15deg);-webkit-mask-image:radial-gradient(circle,#000 4%,transparent 60%);mask-image:radial-gradient(circle,#000 4%,transparent 60%);animation:rvspin 22s linear infinite}
+#reveal.s2 .rv-rays{opacity:.8}
+#reveal .rv-flash{position:fixed;inset:0;background:radial-gradient(circle at 50% 45%,#fff,rgba(255,255,255,.55) 35%,transparent 70%);opacity:0;pointer-events:none}
+#reveal.s2 .rv-flash{animation:rvflash .9s ease-out}
+#reveal .rv-ring{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;border:3px solid var(--rc);opacity:0;pointer-events:none}
+#reveal.s2 .rv-ring{animation:rvring 1.1s ease-out forwards}
+#reveal .rv-parts i{position:absolute;left:50%;top:50%;width:var(--sz);height:var(--sz);margin:calc(var(--sz)/-2) 0 0 calc(var(--sz)/-2);border-radius:50%;background:var(--pc);box-shadow:0 0 10px 2px var(--pc);opacity:0;pointer-events:none}
+#reveal.s2 .rv-parts i{animation:rvpart 1.4s var(--dl) cubic-bezier(.1,.7,.3,1) forwards}
+#reveal .rv-box{position:absolute;left:50%;top:50%;width:150px;height:140px;margin:-70px 0 0 -75px;animation:rvdrop .75s cubic-bezier(.3,1.5,.5,1) both;filter:drop-shadow(0 18px 24px rgba(0,0,0,.55))}
+#reveal.s1 .rv-box{animation:rvshake .9s ease-in-out both,rvglow .9s ease-in both}
+#reveal.s3 .rv-box{animation:rvboxout .6s ease-in forwards}
+#reveal .rv-body{position:absolute;left:14px;right:14px;bottom:0;height:92px;border-radius:6px 6px 14px 14px;background:linear-gradient(180deg,#d9dde5,#8d93a0);border:1px solid rgba(255,255,255,.35);overflow:hidden}
+#reveal .rv-body::before,#reveal .rv-lid::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:22px;margin-left:-11px;background:linear-gradient(90deg,color-mix(in srgb,var(--rc) 70%,#000),var(--rc),color-mix(in srgb,var(--rc) 70%,#000))}
+#reveal .rv-lid{position:absolute;left:2px;right:2px;top:20px;height:44px;border-radius:12px;background:linear-gradient(180deg,#f2f4f8,#a4aab6);border:1px solid rgba(255,255,255,.45);transform-origin:20% 100%;z-index:2}
+#reveal .rv-lid .bow{position:absolute;left:50%;top:-24px;width:46px;height:30px;margin-left:-23px;z-index:3}
+#reveal .rv-lid .bow::before,#reveal .rv-lid .bow::after{content:"";position:absolute;top:2px;width:24px;height:24px;border-radius:50% 50% 50% 8%;border:5px solid var(--rc);background:transparent}
+#reveal .rv-lid .bow::before{left:0;transform:rotate(-20deg)}
+#reveal .rv-lid .bow::after{right:0;transform:scaleX(-1) rotate(-20deg)}
+#reveal.s2 .rv-lid{animation:rvlid .85s cubic-bezier(.2,.8,.3,1) forwards}
+#reveal .rv-card{position:absolute;left:50%;top:50%;width:min(60vw,236px);aspect-ratio:2/3;margin-left:calc(min(60vw,236px)/-2);margin-top:calc(min(60vw,236px)*-0.75);opacity:0;transform:translateY(90px) scale(.3);perspective:1000px;z-index:4}
+#reveal.s3 .rv-card{animation:rvcard 1.05s cubic-bezier(.2,.9,.25,1.08) forwards}
+#reveal .rv-flip{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateY(180deg)}
+#reveal.s3 .rv-flip{animation:rvflip 1.15s .3s cubic-bezier(.3,.9,.3,1) forwards}
+#reveal .rv-front,#reveal .rv-back{position:absolute;inset:0;border-radius:18px;overflow:hidden;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+#reveal .rv-back{transform:rotateY(180deg);display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--rc) 45%,#14172e),#0a0c1c 75%);border:2px solid var(--rc);font:800 64px var(--display);color:rgba(255,255,255,.85)}
+#reveal .rv-front{border:2px solid var(--rc);background:#0b0b0c;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 0 46px color-mix(in srgb,var(--rc) 65%,transparent),0 24px 50px -10px rgba(0,0,0,.7)}
+#reveal .rv-front .art{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto!important;border-radius:0}
+#reveal .rv-front .art img,#reveal .rv-front .art video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#reveal .rv-front::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.5) 50%,transparent 65%);transform:translateX(-120%);pointer-events:none}
+#reveal.s4 .rv-front::after{animation:rvfoil 1.3s .1s ease-out 1}
+#reveal .rv-info{text-align:center;padding:0 22px;opacity:0;transform:translateY(16px);min-height:96px}
+#reveal.s4 .rv-info{animation:rvinfo .6s cubic-bezier(.2,.8,.2,1) forwards}
+#reveal .rv-info .rtags{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+#reveal .rv-info h2{margin:0;font:800 24px/1.2 var(--display);text-shadow:0 0 24px color-mix(in srgb,var(--rc) 70%,transparent)}
+#reveal .rv-info p{margin:5px 0 0;color:var(--mute);font-size:13.5px}
+#reveal .rv-ok{margin-top:18px;min-width:200px;opacity:0;pointer-events:none}
+#reveal.s4 .rv-ok{animation:rvinfo .6s .25s cubic-bezier(.2,.8,.2,1) forwards;pointer-events:auto}
+#reveal.skip .rv-box,#reveal.skip .rv-flash,#reveal.skip .rv-ring,#reveal.skip .rv-parts{display:none}
+#reveal.skip .rv-card{animation:none;opacity:1;transform:translateY(-8px)}
+#reveal.skip .rv-flip{animation:none;transform:none}
+#reveal.skip .rv-rays{opacity:.8}
+#reveal.skip .rv-info,#reveal.skip .rv-ok{animation:none;opacity:1;transform:none;pointer-events:auto}
+@keyframes rvfade{from{opacity:0}to{opacity:1}}
+@keyframes rvout{to{opacity:0}}
+@keyframes rvspin{to{transform:rotate(360deg)}}
+@keyframes rvdrop{0%{opacity:0;transform:translateY(-240px) scale(.8)}100%{opacity:1;transform:none}}
+@keyframes rvshake{0%,100%{transform:translate(0,0) rotate(0)}10%{transform:translate(-3px,0) rotate(-3deg)}20%{transform:translate(3px,-2px) rotate(3deg)}30%{transform:translate(-5px,0) rotate(-5deg)}40%{transform:translate(5px,-3px) rotate(5deg)}50%{transform:translate(-7px,0) rotate(-6deg)}60%{transform:translate(7px,-3px) rotate(6deg)}70%{transform:translate(-8px,0) rotate(-7deg) scale(1.04)}80%{transform:translate(8px,-2px) rotate(7deg) scale(1.06)}90%{transform:translate(-4px,0) rotate(-4deg) scale(1.08)}}
+@keyframes rvglow{from{filter:drop-shadow(0 18px 24px rgba(0,0,0,.55))}to{filter:drop-shadow(0 0 34px var(--rc)) brightness(1.25)}}
+@keyframes rvlid{0%{transform:none;opacity:1}100%{transform:translate(70px,-210px) rotate(32deg);opacity:0}}
+@keyframes rvboxout{to{transform:translateY(130px) scale(.7);opacity:0}}
+@keyframes rvflash{0%{opacity:0}18%{opacity:.95}100%{opacity:0}}
+@keyframes rvring{0%{opacity:.95;transform:scale(1)}100%{opacity:0;transform:scale(24)}}
+@keyframes rvpart{0%{opacity:1;transform:translate(0,0) scale(1)}70%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.2)}}
+@keyframes rvcard{0%{opacity:0;transform:translateY(90px) scale(.3)}60%{opacity:1}100%{opacity:1;transform:translateY(-8px) scale(1)}}
+@keyframes rvflip{0%{transform:rotateY(180deg)}100%{transform:rotateY(0)}}
+@keyframes rvfoil{to{transform:translateX(120%)}}
+@keyframes rvinfo{to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
@@ -707,6 +789,7 @@ input[type=range]::-webkit-slider-thumb,input[type=range]::-moz-range-thumb{back
     <section class="page" id="p0" aria-label="Collection"><div class="in">
       <h2>Collection</h2>
       <p class="sub" id="colSub">Your collection</p>
+      <div class="adbox"></div>
       <div class="srow">
         <label class="search"><i data-lucide="search"></i><input id="q" type="search" placeholder="Search name, anime or ID" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search"></label>
         <button class="fbtn" type="button" id="fbtn" aria-expanded="false" aria-controls="fpanel" aria-label="Filters"><i data-lucide="sliders-horizontal"></i><span class="n" id="fcount" hidden></span></button>
@@ -724,7 +807,7 @@ input[type=range]::-webkit-slider-thumb,input[type=range]::-moz-range-thumb{back
       <h2>Shop</h2>
       <p class="sub">Your own random cards, every day. Each can be bought once.</p>
       <div class="timer"><i data-lucide="clock"></i>Resets in <b id="reset">--:--:--</b></div>
-      <div class="adbox" id="adBox"></div>
+      <div class="adbox"></div>
       <div id="shopBody"></div>
     </div></section>
 
@@ -1148,44 +1231,90 @@ function buy(i){
 
 
 /* ───── reward ads: watch 2 ads, get a random card (Adsgram rewarded block 60988) ───── */
-var RW={block:"60988",ctl:null,left:null,cap:0,need:2,chances:[],busy:false};
+var RW={block:"60988",ctl:null,left:null,cap:0,need:2,chances:[],busy:false,done:0,cur:0,msg:""};
 function rwCtl(){
   if(RW.ctl)return RW.ctl;
   try{if(window.Adsgram&&INIT){RW.ctl=window.Adsgram.init({blockId:RW.block})}}catch(e){}
   return RW.ctl;
 }
-function renderRw(step){
-  var b=$("#adBox"); if(!b)return;
-  if(!INIT||RW.left===null){b.innerHTML="";return}
-  var odds=RW.chances.map(function(x){return '<div style="--rc:var(--c-'+rk(x[0])+')"><i>'+(RE[x[0]]||"")+'</i><span>'+esc(x[0])+'</span><b>'+x[1]+'%</b></div>'}).join("");
-  var out=RW.left<=0, label=step?esc(step):(out?"Come back tomorrow":'<i data-lucide="play"></i>Watch '+RW.need+' ads');
-  b.innerHTML='<div class="adcard"><div class="hd"><span class="ic"><i data-lucide="gift"></i></span><div><h4>Free card</h4><small>Watch '+RW.need+' ads for a random card</small></div></div>'+
-    '<div class="adodds">'+odds+'</div>'+
-    '<button class="btn pri wide" type="button" data-adwatch'+(out||RW.busy?" disabled":"")+'>'+label+'</button>'+
-    '<div class="foot"><span>'+RW.left+' of '+RW.cap+' left today</span><span>Added to your collection</span></div></div>';
+function renderRw(){
+  var boxes=$$(".adbox");
+  if(!INIT||RW.left===null){boxes.forEach(function(b){b.innerHTML=""});return}
+  var segs="",i; for(i=0;i<RW.need;i++)segs+='<span class="seg"><b></b></span>';
+  var skel='<div class="adcard"><div class="hd"><span class="ic"><i data-lucide="gift"></i></span><div><h4>Free card</h4><small>Watch '+RW.need+' ads for a random card</small></div></div>'+
+    '<div class="adbar">'+segs+'</div>'+
+    '<button class="btn pri wide" type="button" data-adwatch></button>'+
+    '<div class="foot"><span data-adlab></span><span data-adleft></span></div></div>';
+  var out=RW.left<=0;
+  var lab=RW.busy?RW.msg:(out?"Come back tomorrow":RW.done+" of "+RW.need+" ads watched");
+  var btn=RW.busy?esc(RW.msg):(out?"Come back tomorrow":'<i data-lucide="play"></i>Watch '+RW.need+' ads');
+  boxes.forEach(function(b){
+    var fresh=!$(".adcard",b); if(fresh)b.innerHTML=skel;
+    var card=$(".adcard",b); card.classList.toggle("busy",RW.busy);
+    $$(".seg",b).forEach(function(s,k){s.classList.toggle("on",k<RW.done);s.classList.toggle("act",RW.busy&&k===RW.cur-1&&k>=RW.done)});
+    var bt=$("[data-adwatch]",b); bt.disabled=out||RW.busy; if(bt.getAttribute("data-s")!==btn){bt.setAttribute("data-s",btn);bt.innerHTML=btn}
+    $("[data-adlab]",b).textContent=lab;
+    $("[data-adleft]",b).innerHTML='<b>'+RW.left+'</b> of '+RW.cap+' left today';
+  });
   icons();
 }
 function loadRw(){
   if(!INIT)return;
   api("/api/adreward").then(function(r){RW.left=r.left;RW.cap=r.cap;RW.need=r.need;RW.chances=r.chances;renderRw()}).catch(function(){});
 }
+
+/* ───── premium reveal: gift box opens, light burst, the card flips over ───── */
+function showReveal(c){
+  var old=$("#reveal"); if(old)old.remove();
+  if(c.m==="p"){var pre=new Image();pre.src=imgUrl(c.id)}
+  var i,n=18+(RIDX[c.rarity]||0)*5,ps="";
+  for(i=0;i<n;i++){var a=Math.random()*Math.PI*2,d=90+Math.random()*200,sz=3+Math.random()*6;
+    ps+='<i style="--dx:'+(Math.cos(a)*d).toFixed(0)+'px;--dy:'+(Math.sin(a)*d-30).toFixed(0)+'px;--sz:'+sz.toFixed(1)+'px;--dl:'+(Math.random()*.25).toFixed(2)+'s;--pc:'+(i%3?"var(--rc)":(i%2?"#fff":"#ffd98a"))+'"></i>'}
+  var el=document.createElement("div"); el.id="reveal"; el.setAttribute("role","dialog"); el.setAttribute("aria-label","Reward opened");
+  el.style.setProperty("--rc","var(--c-"+rk(c.rarity)+")");
+  el.innerHTML='<div class="rv-bg"></div><div class="rv-flash"></div>'+
+    '<div class="rv-stage"><div class="rv-rays"></div><div class="rv-ring"></div><div class="rv-parts">'+ps+'</div>'+
+    '<div class="rv-box"><div class="rv-body"></div><div class="rv-lid"><span class="bow"></span></div></div>'+
+    '<div class="rv-card"><div class="rv-flip"><div class="rv-back">?</div><div class="rv-front">'+artHtml(c,true)+'</div></div></div></div>'+
+    '<div class="rv-info"><div class="rtags">'+rTag(c.rarity)+subTag(c.sub)+'</div><h2>'+esc(c.name)+'</h2><p>'+esc(c.series)+'</p></div>'+
+    '<button class="btn pri rv-ok" type="button">Add to collection</button>';
+  document.body.appendChild(el);
+  var T=[], done=false;
+  function at(ms,fn){T.push(setTimeout(fn,ms))}
+  function finish(){if(done)return;done=true;T.forEach(clearTimeout);el.classList.remove("s1","s2","s3");el.classList.add("skip","s4")}
+  if(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches){finish()}
+  else{
+    at(850,function(){el.classList.add("s1");haptic("light")});
+    at(1800,function(){el.classList.remove("s1");el.classList.add("s2");haptic("heavy")});
+    at(2300,function(){el.classList.add("s3");haptic("medium")});
+    at(3650,function(){el.classList.add("s4");done=true;haptic("ok")});
+  }
+  el.addEventListener("click",function(e){
+    if(e.target.closest(".rv-ok")){haptic("light");el.classList.add("out");setTimeout(function(){el.remove()},360);return}
+    finish();
+  });
+}
+
 function rwWatch(){
   if(RW.busy||!RW.left)return;
   var c=rwCtl(); if(!c){toast("Ads are not ready yet. Try again in a moment.");return}
   var tok="", wait=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
-  RW.busy=true; renderRw("Starting...");
+  RW.busy=true; RW.done=0; RW.cur=0; RW.msg="Starting..."; renderRw();
   api("/api/adreward/start",{}).then(function(r){tok=r.token;var p=Promise.resolve();
-    for(var n=1;n<=RW.need;n++)(function(n){p=p.then(function(){renderRw("Ad "+n+" of "+RW.need);return c.show()}).then(function(){return n<RW.need?wait(500):0})})(n);
+    for(var n=1;n<=RW.need;n++)(function(n){p=p.then(function(){RW.cur=n;RW.msg="Ad "+n+" of "+RW.need;renderRw();return c.show()}).then(function(){RW.done=n;renderRw();haptic("light");return n<RW.need?wait(600):0})})(n);
     return p;
   }).then(function(){
-    renderRw("Opening your reward...");
-    return api("/api/adreward/claim",{token:tok});
+    RW.cur=0; RW.msg="Opening your reward..."; renderRw();
+    var claim=function(k){return api("/api/adreward/claim",{token:tok}).then(function(r){
+      if(r.pending){if(k>=8)throw new Error("Reward is taking too long. Check back in a minute.");return wait(1500).then(function(){return claim(k+1)})}
+      return r})};
+    return claim(0);
   }).then(function(r){
     var c2=r.card; RW.left=r.left; haptic("ok"); loadMine();
-    openSheet('<div class="done"><div class="tick"><i data-lucide="gift"></i></div><h3>You got a '+esc(c2.rarity)+' card</h3><div class="sprev" style="--rc:var(--c-'+rk(c2.rarity)+')">'+artHtml(c2)+'<div class="t"><b>'+esc(c2.name)+'</b><span>'+esc(c2.series)+'</span><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">'+rTag(c2.rarity)+subTag(c2.sub)+'</div></div></div><span class="sub">Added to your collection.</span></div><button class="btn pri wide" type="button" data-close>Nice</button>');
+    showReveal(c2);
   }).catch(function(e){
     haptic("err"); toast(e&&e.message?e.message:"The ads were not completed. Try again.");
-  }).then(function(){RW.busy=false;loadRw()});
+  }).then(function(){RW.busy=false;RW.done=0;RW.cur=0;RW.msg="";loadRw()});
 }
 
 /* ───── mines ───── */
@@ -1339,7 +1468,7 @@ function wire(){
   new IntersectionObserver(function(en){if(en[0].isIntersecting)moreCards()},{root:$("#p0"),rootMargin:"600px"}).observe($("#more"));
   $("#vclose").addEventListener("click",function(){closeViewer()});
   $("#vprev").addEventListener("click",function(){step(-1)}); $("#vnext").addEventListener("click",function(){step(1)});
-  $("#adBox").addEventListener("click",function(e){if(e.target.closest("[data-adwatch]"))rwWatch()});
+  $$(".adbox").forEach(function(b){b.addEventListener("click",function(e){if(e.target.closest("[data-adwatch]"))rwWatch()})});
   $("#shopBody").addEventListener("click",function(e){
     if(e.target.closest("[data-shopretry]"))return loadShop();
     var v=e.target.closest(".art-btn[data-view]");if(v){openViewer(shop.items.map(function(c){return {id:c.id,name:c.name,series:c.series,rarity:c.rarity,sub:c.sub,qty:0,m:c.m}}),Number(v.getAttribute("data-view")));return}

@@ -1231,7 +1231,7 @@ function buy(i){
 
 
 /* ───── reward ads: watch 2 ads, get a random card (Adsgram rewarded block 60988) ───── */
-var RW={block:"60988",ctl:null,left:null,cap:0,need:2,chances:[],busy:false,done:0,cur:0,msg:""};
+var RW={block:"60988",ctl:null,left:null,cap:0,need:2,chances:[],busy:false,done:0,cur:0,msg:"",gap:7000,lastEnd:0};
 function rwCtl(){
   if(RW.ctl)return RW.ctl;
   try{if(window.Adsgram&&INIT){RW.ctl=window.Adsgram.init({blockId:RW.block})}}catch(e){}
@@ -1295,13 +1295,38 @@ function showReveal(c){
   });
 }
 
+/* Adsgram refuses ads that come too close together ("watching ads too often"), so wait out a gap before every ad */
+function rwCooldown(){
+  return new Promise(function(res){
+    (function tick(){
+      var left=RW.gap-(Date.now()-Math.max(RW.lastEnd||0,ADS.last||0));
+      if(left<=0){res();return}
+      RW.cur=0; RW.msg="Next ad in "+Math.ceil(left/1000)+"s"; renderRw(); setTimeout(tick,400);
+    })();
+  });
+}
+function rwShowOne(c,n){
+  var tries=0;
+  function end(){RW.lastEnd=Date.now();ADS.last=RW.lastEnd}
+  function go(){
+    return rwCooldown().then(function(){
+      RW.cur=n; RW.msg="Ad "+n+" of "+RW.need; renderRw();
+      return c.show().then(function(r){end();return r},function(e){
+        end();
+        if(e&&e.error&&++tries<=2)return go();      /* ad error / too soon: wait and try this ad again */
+        throw e;
+      });
+    });
+  }
+  return go();
+}
 function rwWatch(){
   if(RW.busy||!RW.left)return;
   var c=rwCtl(); if(!c){toast("Ads are not ready yet. Try again in a moment.");return}
   var tok="", wait=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
-  RW.busy=true; RW.done=0; RW.cur=0; RW.msg="Starting..."; renderRw();
+  RW.busy=true; ADS.busy=true; RW.done=0; RW.cur=0; RW.msg="Starting..."; renderRw();
   api("/api/adreward/start",{}).then(function(r){tok=r.token;var p=Promise.resolve();
-    for(var n=1;n<=RW.need;n++)(function(n){p=p.then(function(){RW.cur=n;RW.msg="Ad "+n+" of "+RW.need;renderRw();return c.show()}).then(function(){RW.done=n;renderRw();haptic("light");return n<RW.need?wait(600):0})})(n);
+    for(var n=1;n<=RW.need;n++)(function(n){p=p.then(function(){return rwShowOne(c,n)}).then(function(){RW.done=n;renderRw();haptic("light")})})(n);
     return p;
   }).then(function(){
     RW.cur=0; RW.msg="Opening your reward..."; renderRw();
@@ -1314,7 +1339,7 @@ function rwWatch(){
     showReveal(c2);
   }).catch(function(e){
     haptic("err"); toast(e&&e.message?e.message:"The ads were not completed. Try again.");
-  }).then(function(){RW.busy=false;RW.done=0;RW.cur=0;RW.msg="";loadRw()});
+  }).then(function(){RW.busy=false;ADS.busy=false;RW.done=0;RW.cur=0;RW.msg="";loadRw()});
 }
 
 /* ───── mines ───── */

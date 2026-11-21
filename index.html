@@ -1002,6 +1002,18 @@ function maybeAd(){
   c.show().then(function(){ADS.last=Date.now();ADS.busy=false},function(){ADS.last=Date.now();ADS.busy=false});
 }
 
+
+/* ───── start-up interstitial (block int-61157): once, right after the welcome screen closes ───── */
+var SU={block:"int-61157",ctl:null,tries:0};
+function startupAd(){
+  if(!INIT)return;
+  try{if(!SU.ctl&&window.Adsgram)SU.ctl=window.Adsgram.init({blockId:SU.block})}catch(e){}
+  if(!SU.ctl){if(++SU.tries<3)setTimeout(startupAd,1500);return}
+  function done(){ADS.last=Date.now();ADS.busy=false}
+  ADS.busy=true;                       /* keeps the card-open ad from stacking right behind it */
+  try{SU.ctl.show().then(done,done)}catch(e){done()}
+}
+
 /* ───── full view: swipe left/right for the next card, down to close ───── */
 var V={list:[],i:0,open:false};
 function viewerRender(dir){
@@ -1135,8 +1147,8 @@ function buy(i){
 }
 
 
-/* ───── reward ads: watch 2 ads, get a random card (Adsgram block int-61157) ───── */
-var RW={block:"int-61157",ctl:null,left:null,cap:0,need:2,chances:[],busy:false};
+/* ───── reward ads: watch 2 ads, get a random card (Adsgram rewarded block 60988) ───── */
+var RW={block:"60988",ctl:null,left:null,cap:0,need:2,chances:[],busy:false};
 function rwCtl(){
   if(RW.ctl)return RW.ctl;
   try{if(window.Adsgram&&INIT){RW.ctl=window.Adsgram.init({blockId:RW.block})}}catch(e){}
@@ -1364,6 +1376,7 @@ function enterHub(){
   var w=$("#welcome"); if(!w||w.classList.contains("out"))return;
   haptic("medium"); w.classList.add("out"); $("#app").classList.remove("pre");
   setTimeout(function(){if(w.parentNode)w.remove()},700);
+  setTimeout(startupAd,800);
 }
 function initWelcome(){
   var u=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user;

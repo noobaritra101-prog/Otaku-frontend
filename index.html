@@ -766,7 +766,7 @@ input[type=range]::-webkit-slider-thumb,input[type=range]::-moz-range-thumb{back
     <div class="wlogo wr" style="--d:1"><div class="core"><svg class="mono" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="mg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eceef2"/><stop offset="1" stop-color="#8fa7ff"/></linearGradient></defs><text x="50" y="64" text-anchor="middle" font-size="46" font-weight="800" font-family="Georgia,serif" fill="url(#mg2)">ON</text></svg></div><img id="wLogo" alt=""></div>
     <div class="wk wr" style="--d:1">Welcome<span id="wName"></span></div>
     <h1 class="wh wr" style="--d:2">Otaku Nexus</h1>
-    <p class="wsub wr" style="--d:3">Collect, trade and show off your anime cards. Everything starts with the bot.</p>
+    <p class="wsub wr" style="--d:3">Collect, trade and show off your anime characters. Everything starts with the bot.</p>
 
     <a class="wcard wr" style="--d:4" href="https://t.me/Otakunx_bot" data-tl><span class="wi"><i data-lucide="bot"></i></span><span class="wt"><small>Mention bot</small><b>@Otakunx_bot</b></span><i class="wc" data-lucide="chevron-right"></i></a>
     <a class="wcard wr" style="--d:5" href="https://t.me/otaku_main" data-tl><span class="wi"><i data-lucide="megaphone"></i></span><span class="wt"><small>Main channel</small><b>t.me/otaku_main</b></span><i class="wc" data-lucide="chevron-right"></i></a>
@@ -805,7 +805,7 @@ input[type=range]::-webkit-slider-thumb,input[type=range]::-moz-range-thumb{back
 
     <section class="page" id="p1" aria-label="Shop"><div class="in">
       <h2>Shop</h2>
-      <p class="sub">Your own random cards, every day. Each can be bought once.</p>
+      <p class="sub">Your own random characters, every day. Each can be bought once.</p>
       <div class="timer"><i data-lucide="clock"></i>Resets in <b id="reset">--:--:--</b></div>
       <div class="adbox"></div>
       <div id="shopBody"></div>
@@ -831,8 +831,8 @@ input[type=range]::-webkit-slider-thumb,input[type=range]::-moz-range-thumb{back
       <ol class="steps">
         <li class="rv"><span class="ico"><i data-lucide="user-plus"></i></span><div class="tx"><em class="num">01</em><b>Add the bot to your group</b><p>Open the bot, press Add Me and make it an admin so it can see messages.</p></div></li>
         <li class="rv"><span class="ico"><i data-lucide="message-circle"></i></span><div class="tx"><em class="num">02</em><b>Chat normally</b><p>A character drops every <span id="dMin">110</span> to <span id="dMax">500</span> messages, set by group admins with /setdrop.</p></div></li>
-        <li class="rv"><span class="ico"><i data-lucide="hand"></i></span><div class="tx"><em class="num">03</em><b>Bind it first</b><p>Type /bind and the character's name. The first correct name keeps the card.</p></div></li>
-        <li class="rv"><span class="ico"><i data-lucide="coins"></i></span><div class="tx"><em class="num">04</em><b>Earn Nex and spend it</b><p>Claim /daily, play /slot and /whoami, play Mines here, then buy cards in the Shop.</p></div></li>
+        <li class="rv"><span class="ico"><i data-lucide="hand"></i></span><div class="tx"><em class="num">03</em><b>Bind it first</b><p>Type /bind and the character's name. The first correct name keeps the character.</p></div></li>
+        <li class="rv"><span class="ico"><i data-lucide="coins"></i></span><div class="tx"><em class="num">04</em><b>Earn Nex and spend it</b><p>Claim /daily, play /slot and /whoami, play Mines here, then buy characters in the Shop.</p></div></li>
       </ol>
       <div class="lab rv"><i data-lucide="gem"></i>Rarities</div>
       <div class="rgrid" id="rarGrid"></div>
@@ -842,7 +842,7 @@ input[type=range]::-webkit-slider-thumb,input[type=range]::-moz-range-thumb{back
       <div class="cmdlist">
         <div class="crow rv"><code>/daily</code><span>Claim your daily Nex</span></div>
         <div class="crow rv"><code>/mynex</code><span>Check your balance</span></div>
-        <div class="crow rv"><code>/shop</code><span>See today's cards</span></div>
+        <div class="crow rv"><code>/shop</code><span>See today's characters</span></div>
         <div class="crow rv"><code>/harem</code><span>Browse your collection</span></div>
         <div class="crow rv"><code>/search rem</code><span>Find a character by name or ID</span></div>
         <div class="crow rv"><code>/waifuverse</code><span>Explore every character</span></div>
@@ -861,7 +861,7 @@ input[type=range]::-webkit-slider-thumb,input[type=range]::-moz-range-thumb{back
   </nav>
 </div>
 
-<div id="viewer" hidden role="dialog" aria-modal="true" aria-label="Card viewer">
+<div id="viewer" hidden role="dialog" aria-modal="true" aria-label="Character viewer">
   <div id="vbg"></div>
   <div class="stage" id="stage"><div class="vcard" id="vcard"></div></div>
   <div class="vtop"><span class="round" style="visibility:hidden"></span><span class="count" id="vcount"></span><button class="round" type="button" id="vclose" aria-label="Close"><i data-lucide="x"></i></button></div>
@@ -1035,7 +1035,7 @@ function appendRange(a,b){
     if(c.series!==lastSeries||!lastGrid){
       var s=sStats[c.series], sec=document.createElement("section");
       sec.className="series";
-      sec.innerHTML='<header class="shead"><h3>'+esc(c.series)+'</h3><span>'+s.u+' card'+(s.u===1?"":"s")+(s.c>s.u?" · "+s.c+" copies":"")+'</span></header><div class="sgrid"></div>';
+      sec.innerHTML='<header class="shead"><h3>'+esc(c.series)+'</h3><span>'+s.u+' character'+(s.u===1?"":"s")+(s.c>s.u?" · "+s.c+" copies":"")+'</span></header><div class="sgrid"></div>';
       host.appendChild(sec); lastGrid=sec.lastChild; lastSeries=c.series;
     }
     lastGrid.insertAdjacentHTML("beforeend",cardHtml(c,i));
@@ -1048,8 +1048,8 @@ function renderGrid(){
   list.forEach(function(c){var s=sStats[c.series]; if(!s){s=sStats[c.series]={u:0,c:0};animes++} s.u++; s.c+=c.qty; copies+=c.qty});
   $("#stats").innerHTML='<span><b>'+animes+'</b> anime</span><span><b>'+list.length+'</b> unique</span><span><b>'+copies+'</b> copies</span>';
   var host=$("#grid");
-  if(!mine.loaded){host.innerHTML='<div class="empty">Loading cards...</div>';return}
-  if(!list.length){host.innerHTML='<div class="empty">'+(mine.cards.length?"No card matches. Clear the search or pick another filter.":"You have no cards yet. Catch your first drop in a group.")+'</div>';return}
+  if(!mine.loaded){host.innerHTML='<div class="empty">Loading characters...</div>';return}
+  if(!list.length){host.innerHTML='<div class="empty">'+(mine.cards.length?"No character matches. Clear the search or pick another filter.":"You have no characters yet. Catch your first drop in a group.")+'</div>';return}
   host.innerHTML=""; shown=Math.min(PAGE,list.length); appendRange(0,shown);
 }
 function moreCards(){
@@ -1064,7 +1064,7 @@ function showCached(){
   }catch(e){}
 }
 function loadMine(){
-  if(!INIT){$("#colSub").textContent="Open from the bot";$("#grid").innerHTML='<div class="empty">Open this app from the bot with /oweb to see your cards.</div>';return Promise.resolve()}
+  if(!INIT){$("#colSub").textContent="Open from the bot";$("#grid").innerHTML='<div class="empty">Open this app from the bot with /oweb to see your characters.</div>';return Promise.resolve()}
   return api("/api/mycollection").then(function(r){var sig=JSON.stringify(r.cards); try{localStorage.setItem(CKEY,sig)}catch(e){} if(sig===colSig&&mine.loaded)return; colSig=sig; mine.cards=toCards(r.cards);mine.loaded=true;$("#colSub").textContent="Grouped by anime";buildChips();renderGrid()})
   .catch(function(){$("#colSub").textContent="Could not reach the bot";$("#grid").innerHTML='<div class="empty">Could not load your collection.<br><button class="btn" data-retry type="button" style="margin-top:12px">Try again</button></div>'});
 }
@@ -1161,14 +1161,14 @@ function itemHtml(c,i){
     '<button class="btn pri" type="button" data-buy="'+i+'"><i data-lucide="shopping-bag"></i>Buy</button>')+'</div></div>';
 }
 function lockedHtml(r,p){
-  return '<div class="item locked" style="--rc:var(--c-'+rk(r)+')"><div class="art" style="--h:'+(RIDX[r]*40)+'"><span class="glyph">?</span></div><div class="body">'+rTag(r)+'<h4>Mystery '+r+' card</h4>'+
+  return '<div class="item locked" style="--rc:var(--c-'+rk(r)+')"><div class="art" style="--h:'+(RIDX[r]*40)+'"><span class="glyph">?</span></div><div class="body">'+rTag(r)+'<h4>Mystery '+r+' character</h4>'+
    '<div class="lock"><i data-lucide="lock"></i>Sunday only</div><div class="price">'+fmt(p)+' <small>Nex</small></div></div></div>';
 }
 function renderShop(){
   var b=$("#shopBody");
   if(!INIT){
     var d=overview?overview.shop.daily:[], s=overview?overview.shop.sunday:[];
-    b.innerHTML='<div class="notice"><i data-lucide="log-in"></i><br>Open this page from the bot with /oweb to see your cards and buy them.</div>'+
+    b.innerHTML='<div class="notice"><i data-lucide="log-in"></i><br>Open this page from the bot with /oweb to see your characters and buy them.</div>'+
       '<div class="lab">Prices</div><ul class="rules">'+d.concat(s).map(function(x){return '<li><span>'+(RE[x[0]]||"")+" "+x[0]+'</span><b>'+fmt(x[1])+' Nex</b></li>'}).join("")+'</ul>';
     icons(); return;
   }
@@ -1241,7 +1241,7 @@ function renderRw(){
   var boxes=$$(".adbox");
   if(!INIT||RW.left===null){boxes.forEach(function(b){b.innerHTML=""});return}
   var segs="",i; for(i=0;i<RW.need;i++)segs+='<span class="seg"><b></b></span>';
-  var skel='<div class="adcard"><div class="hd"><span class="ic"><i data-lucide="gift"></i></span><div><h4>Free card</h4><small>Watch '+RW.need+' ads for a random card</small></div></div>'+
+  var skel='<div class="adcard"><div class="hd"><span class="ic"><i data-lucide="gift"></i></span><div><h4>Free character</h4><small>Watch '+RW.need+' ads for a random character</small></div></div>'+
     '<div class="adbar">'+segs+'</div>'+
     '<button class="btn pri wide" type="button" data-adwatch></button>'+
     '<div class="foot"><span data-adlab></span><span data-adleft></span></div></div>';
@@ -1254,7 +1254,7 @@ function renderRw(){
     $$(".seg",b).forEach(function(s,k){s.classList.toggle("on",k<RW.done);s.classList.toggle("act",RW.busy&&k===RW.cur-1&&k>=RW.done)});
     var bt=$("[data-adwatch]",b); bt.disabled=out||RW.busy; if(bt.getAttribute("data-s")!==btn){bt.setAttribute("data-s",btn);bt.innerHTML=btn}
     $("[data-adlab]",b).textContent=lab;
-    $("[data-adleft]",b).innerHTML='<b>'+RW.left+'</b> of '+RW.cap+' left today';
+    $("[data-adleft]",b).innerHTML=RW.cap===1?(RW.left>0?'Once a day':'<b>Claimed</b> today'):'<b>'+RW.left+'</b> of '+RW.cap+' left today';
   });
   icons();
 }
